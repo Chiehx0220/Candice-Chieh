@@ -23,6 +23,14 @@ module.exports = function (eleventyConfig) {
   // gallery.js only sets lat/lng when a photo has a location that
   // geocoded successfully).
   eleventyConfig.addFilter("geoPhotos", function (photos) {
+    // gallery.njk's own <img> tags use `{{ photo.imageUrl | url }}` to
+    // apply the site's --pathprefix (e.g. /Candice-Chieh/ in the
+    // production build) to a site-relative imageUrl — this JSON payload
+    // needs the same treatment, or every photo whose imageUrl isn't a
+    // full external URL (a pCloud link, say) 404s once deployed under a
+    // path prefix, even though it looks fine locally where there is no
+    // prefix to miss.
+    const urlFilter = eleventyConfig.getFilter("url");
     return (photos || [])
       .filter(function (p) { return typeof p.lat === "number" && typeof p.lng === "number"; })
       .map(function (p) {
@@ -33,7 +41,7 @@ module.exports = function (eleventyConfig) {
           title: p.title,
           date: p.shortDate,
           caption: p.caption,
-          imageUrl: p.imageUrl,
+          imageUrl: urlFilter(p.imageUrl),
           category: p.category,
           location: p.location,
         };
