@@ -3,8 +3,8 @@ const gallery = require("./gallery.js");
 // "On this day" throwback groups, computed against the actual build date —
 // see .github/workflows/deploy.yml's daily schedule trigger, which exists
 // specifically so this doesn't just go stale between content edits.
-module.exports = function () {
-  const photos = gallery();
+module.exports = async function () {
+  const photos = await gallery();
   const today = new Date();
   const byLabel = new Map();
 

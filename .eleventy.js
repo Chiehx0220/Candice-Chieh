@@ -11,6 +11,33 @@ module.exports = function (eleventyConfig) {
     return (arr || []).slice(0, n);
   });
 
+  // For embedding data as an inline <script type="application/json">
+  // payload (see gallery.njk's map view) — safe to drop straight into
+  // HTML because it's application/json, not executable script content.
+  eleventyConfig.addFilter("json", function (obj) {
+    return JSON.stringify(obj);
+  });
+
+  // Trims the gallery list down to just what the map view needs, and
+  // drops anything that never got build-time coordinates (src/_data/
+  // gallery.js only sets lat/lng when a photo has a location that
+  // geocoded successfully).
+  eleventyConfig.addFilter("geoPhotos", function (photos) {
+    return (photos || [])
+      .filter(function (p) { return typeof p.lat === "number" && typeof p.lng === "number"; })
+      .map(function (p) {
+        return {
+          lat: p.lat,
+          lng: p.lng,
+          title: p.title,
+          date: p.shortDate,
+          caption: p.caption,
+          imageUrl: p.imageUrl,
+          category: p.category,
+        };
+      });
+  });
+
   return {
     dir: {
       input: "src",

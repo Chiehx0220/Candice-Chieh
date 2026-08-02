@@ -5,6 +5,10 @@ pageKey: gallery
 permalink: gallery.html
 ---
 {% extends "base.njk" %}
+{% block extraHead %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="">
+{% endblock %}
 {% block content %}
 
 <div class="page-header reveal">
@@ -12,15 +16,21 @@ permalink: gallery.html
   <p class="md-body-large md-on-surface-variant">日常、旅行、紀念日與美食 — 每一張都是我們的小小片刻。</p>
 </div>
 
-<md-chip-set id="tags" style="margin-bottom:20px" role="group" aria-label="相片分類篩選">
-  <md-filter-chip label="全部" data-filter="all" selected></md-filter-chip>
-  <md-filter-chip label="日常" data-filter="daily"></md-filter-chip>
-  <md-filter-chip label="旅行" data-filter="trip"></md-filter-chip>
-  <md-filter-chip label="紀念日" data-filter="anniversary"></md-filter-chip>
-  <md-filter-chip label="美食" data-filter="food"></md-filter-chip>
-</md-chip-set>
+<div class="gallery-controls reveal">
+  <md-chip-set id="tags" role="group" aria-label="相片分類篩選">
+    <md-filter-chip label="全部" data-filter="all" selected></md-filter-chip>
+    <md-filter-chip label="日常" data-filter="daily"></md-filter-chip>
+    <md-filter-chip label="旅行" data-filter="trip"></md-filter-chip>
+    <md-filter-chip label="紀念日" data-filter="anniversary"></md-filter-chip>
+    <md-filter-chip label="美食" data-filter="food"></md-filter-chip>
+  </md-chip-set>
+  <md-chip-set id="gallery-view-toggle" role="group" aria-label="檢視模式">
+    <md-filter-chip id="view-grid-chip" label="格狀檢視" selected></md-filter-chip>
+    <md-filter-chip id="view-map-chip" label="地圖檢視"></md-filter-chip>
+  </md-chip-set>
+</div>
 
-<div class="gallery-grid" data-gallery-scope>
+<div id="gallery-grid-view" class="gallery-grid" data-gallery-scope>
   {% for photo in gallery %}
   <figure data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
     <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
@@ -28,6 +38,13 @@ permalink: gallery.html
   </figure>
   {% endfor %}
 </div>
+
+<div id="gallery-map-view" class="is-hidden">
+  <div id="gallery-map" class="gallery-map"></div>
+  <p id="gallery-map-empty" class="md-body-medium md-on-surface-variant is-hidden" style="text-align:center;margin-top:16px">還沒有照片標記拍攝地點,之後補上後就會顯示在這裡的地圖上 🩷</p>
+</div>
+
+<script type="application/json" id="gallery-geo-data">{{ gallery | geoPhotos | json | safe }}</script>
 
 {% endblock %}
 {% block afterFooter %}
@@ -52,4 +69,9 @@ permalink: gallery.html
   </div>
 </md-dialog>
 {% endblock %}
-{% block extraScripts %}<script src="{{ '/js/gallery.js' | url }}"></script>{% endblock %}
+{% block extraScripts %}
+<script src="{{ '/js/gallery.js' | url }}"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin=""></script>
+<script src="{{ '/js/gallery-map.js' | url }}"></script>
+{% endblock %}

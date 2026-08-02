@@ -37,6 +37,7 @@
   import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, typescaleStyles.styleSheet];
 </script>
+{% block extraHead %}{% endblock %}
 </head>
 <body data-page="{{ pageKey }}" data-latest-diary="{{ latestDiaryDate }}" data-latest-gallery="{{ latestGalleryDate }}" data-latest-about="{{ latestAboutDate }}">
   {% block progressBar %}{% endblock %}
