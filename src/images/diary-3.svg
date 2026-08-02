@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#FFECF2"/><stop offset="100%" stop-color="#FFD1E3"/>
+  </linearGradient></defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <circle cx="700" cy="440" r="150" fill="#ffffff" opacity="0.45"/>
+  <g transform="translate(400,220) scale(5)">
+    <path transform="translate(-12,-13)" d="M12 21s-7.5-4.6-10-9.1C.6 8.6 2 5 5.6 5c2 0 3.4 1 4.4 2.4C11 6 12.4 5 14.4 5 18 5 19.4 8.6 22 11.9 19.5 16.4 12 21 12 21z" fill="#D6336C"/>
+  </g>
+  <text x="400" y="340" font-family="'Noto Sans TC','Roboto',sans-serif" font-size="26" font-weight="500" fill="#D6336C" text-anchor="middle">電影之夜</text>
+</svg>

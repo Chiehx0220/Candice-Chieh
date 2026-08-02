@@ -1,0 +1,17 @@
+{
+  "name": "candice-chieh",
+  "private": true,
+  "version": "1.0.0",
+  "description": "阿蕭跟老郭的生活記錄 — Eleventy + Decap CMS",
+  "scripts": {
+    "start": "eleventy --serve",
+    "build": "eleventy",
+    "build:prod": "eleventy --pathprefix=/Candice-Chieh/"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "markdown-it": "^14.1.0"
+  }
+}

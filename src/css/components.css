@@ -1,0 +1,514 @@
+/* ==========================================================================
+   Page chrome + custom surfaces built from real @material/web primitives.
+
+   This file intentionally contains NO hand-rolled re-implementations of
+   components @material/web already provides (button, icon-button, fab,
+   chip, dialog, divider, list, tabs, elevation) — those are the real
+   custom elements, loaded via the import map in each page's <head>, and
+   themed purely through the --md-sys-color-* / --md-sys-shape-* tokens in
+   tokens.css. What's here is only the page-level layout around them, plus
+   the "elevation-surface" pattern that @material/web's own docs recommend
+   for building a custom surface (there is no <md-card> in the library).
+   ========================================================================== */
+
+/* Avoid a flash of unstyled content before custom elements upgrade. */
+:not(:defined) { visibility: hidden; }
+
+/* ---------------------------------------------------------------------- */
+/* Adaptive navigation shell.
+   @material/web has no Navigation Bar / Rail / Drawer custom elements
+   available through the single `all.js` CDN entry point this site relies
+   on (confirmed empirically — importing the labs/* modules alongside
+   all.js throws the same duplicate md-elevation registration error
+   documented at the top of each page's <head>), so — same tradeoff this
+   site already makes for "cards" via .elevation-surface — these three are
+   spec-aligned hand-rolled MD3 markup/tokens, not literal custom elements.
+   All three are injected by js/nav.js on every page load; only one is
+   ever visible at a time, switched purely by the media queries below:
+     Compact  (<600px)   → .nav-bar    (bottom, fixed)
+     Medium   (600-839px)→ .nav-rail   (side, icon + short label)
+     Expanded (840px+)   → .nav-drawer (side, wider, icon + full label)
+   ---------------------------------------------------------------------- */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 64px;
+  padding-inline: 16px;
+  background: var(--md-sys-color-surface-container);
+  box-shadow: none;
+  /* box-shadow is intentionally NOT in this transition list — animating
+     between "none" and a multi-layer shadow interpolates unreliably
+     across browsers (some report a zero-alpha, zero-offset shadow for the
+     entire transition). It just snaps in/out instead; the background
+     tonal shift still animates smoothly. */
+  transition: background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+/* MD3's documented "scrolled" state: the bar steps up one tonal level and
+   picks up a soft shadow once content is actually scrolling under it,
+   instead of sitting at the same flat elevation the whole time. */
+.top-app-bar.is-scrolled {
+  background: var(--md-sys-color-surface-container-high);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--md-sys-color-shadow) 30%, transparent),
+              0 2px 6px 2px color-mix(in srgb, var(--md-sys-color-shadow) 15%, transparent);
+}
+
+.top-app-bar__brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-full);
+  padding: 6px 10px 6px 6px;
+  margin-left: -6px;
+  transition: background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.top-app-bar__brand:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-hover-opacity) * 100%), transparent);
+}
+.top-app-bar__brand svg { flex: none; color: var(--md-sys-color-primary); }
+.top-app-bar__brand span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-app-bar__actions { display: flex; align-items: center; gap: 4px; }
+
+/* Shared nav-item interaction styling (indicator pill + active state),
+   parameterized per variant below via CSS custom properties. */
+.nav-bar__item,
+.nav-rail__item,
+.nav-drawer__item {
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: none;
+  transition: color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.nav-bar__item svg,
+.nav-rail__item svg,
+.nav-drawer__item svg {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  transition: transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+.nav-bar__item.is-active,
+.nav-rail__item.is-active,
+.nav-drawer__item.is-active {
+  color: var(--md-sys-color-on-surface);
+}
+/* Active icon reads slightly heavier than inactive ones — the MD3 nav spec
+   calls for a filled/outlined icon swap; without separate icon artwork
+   for every glyph, a small scale bump gives the same "this one is
+   selected" weight cue. */
+.nav-bar__item.is-active svg,
+.nav-rail__item.is-active svg,
+.nav-drawer__item.is-active svg {
+  transform: scale(1.1);
+}
+/* State-layer hover feedback — every one of these was previously static
+   until clicked, which read as inert/lifeless rather than interactive. */
+@media (hover: hover) {
+  .nav-drawer__item:hover {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-hover-opacity) * 100%), transparent);
+  }
+  .nav-bar__item:hover .nav-bar__indicator,
+  .nav-rail__item:hover .nav-rail__indicator {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-hover-opacity) * 100%), transparent);
+  }
+}
+
+/* Small "new content" badge (MD3 dot badge) — @material/web has no
+   <md-badge>, so this is a plain positioned dot. Parent needs
+   position:relative, which every icon/indicator wrapper already has. */
+.nav-bar__indicator, .nav-rail__indicator, .nav-drawer__item {
+  position: relative;
+}
+/* Anchors the badge to the icon's own bounding box rather than whichever
+   wider container it sits inside (the 56-64px indicator pill on bar/rail,
+   or the full-width row on drawer) — without this, the dot floats in that
+   container's empty side padding instead of touching the icon's corner. */
+.nav-icon-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.nav-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-error);
+  border: 2px solid var(--md-sys-color-surface);
+}
+.nav-drawer__item.is-active .nav-badge { border-color: var(--md-sys-color-secondary-container); }
+
+/* Bottom Navigation Bar — compact only */
+.nav-bar {
+  display: none;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 40;
+  height: 80px;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--md-sys-color-surface-container);
+}
+.nav-bar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  padding: 8px 0;
+}
+.nav-bar__indicator {
+  width: 64px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.nav-bar__item.is-active .nav-bar__indicator {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  animation: nav-indicator-grow var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+/* Indicator pill grows in from the icon's center instead of just
+   appearing — a small nod to MD3 Expressive's shape-morphing selection
+   states, without needing a JS-driven shape-morph library. */
+@keyframes nav-indicator-grow {
+  from { transform: scaleX(0.4); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+/* Navigation Rail — medium only */
+.nav-rail {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 80px;
+  flex: none;
+  padding-top: 20px;
+  background: var(--md-sys-color-surface);
+}
+.nav-rail__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 64px;
+}
+.nav-rail__indicator {
+  width: 56px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.nav-rail__item.is-active .nav-rail__indicator {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  animation: nav-indicator-grow var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+/* Navigation Drawer (standard/persistent) — expanded+ only */
+.nav-drawer {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  width: 240px;
+  flex: none;
+  padding: 20px 12px;
+  background: var(--md-sys-color-surface);
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+}
+.nav-drawer__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 16px 16px;
+  color: var(--md-sys-color-on-surface);
+}
+.nav-drawer__header svg { flex: none; color: var(--md-sys-color-primary); }
+.nav-drawer__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+              border-radius var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.nav-drawer__item.is-active {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  animation: nav-indicator-grow var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+/* Small MD3 Expressive touch: the pill's corners relax into the "large"
+   shape token on hover instead of staying a static stadium shape. */
+@media (hover: hover) {
+  .nav-drawer__item:not(.is-active):hover {
+    border-radius: var(--md-sys-shape-corner-large);
+  }
+}
+
+@media (max-width: 599px) {
+  .nav-bar { display: flex; }
+  .page-content { padding-bottom: 96px; } /* clear the fixed bottom bar */
+}
+@media (min-width: 600px) and (max-width: 839px) {
+  .app-shell { flex-direction: row; }
+  .nav-rail { display: flex; }
+}
+@media (min-width: 840px) {
+  .app-shell { flex-direction: row; }
+  .nav-drawer { display: flex; }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Elevation-surface — the officially-documented pattern for a custom
+   surface: a position:relative box with a <md-elevation> filling it,
+   controlled via --md-elevation-level. Used wherever this site needs a
+   card-like block that @material/web has no dedicated component for. */
+/* ---------------------------------------------------------------------- */
+.elevation-surface {
+  position: relative;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface-container-low);
+  --md-elevation-level: 1;
+  transition: transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+              background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+/* Hover lift on interactive (non-flat) surfaces — md-elevation's own level
+   doesn't animate smoothly through a CSS custom property, so the "lift"
+   feedback comes from a small transform instead. */
+a.elevation-surface:not(.is-flat):hover,
+.profile-card.elevation-surface:hover {
+  transform: translateY(-4px);
+}
+/* Flat surfaces stay flat (no shadow to lift), so interactive ones get an
+   MD3 state-layer tint instead, using the existing hover-opacity token. */
+a.elevation-surface.is-flat:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-hover-opacity) * 100%), var(--md-sys-color-surface-container-highest));
+}
+.elevation-surface.is-flat {
+  --md-elevation-level: 0;
+  background: var(--md-sys-color-surface-container-highest);
+  /* Flat surfaces have no shadow to worry about clipping, so it's safe to
+     hide overflow here — this is what actually clips child content (list
+     item ripples, images) to the rounded corners. The base .elevation-surface
+     deliberately does NOT do this, since it would clip the <md-elevation>
+     drop shadow, which needs to render outside the box. */
+  overflow: hidden;
+}
+.elevation-surface.is-outlined {
+  --md-elevation-level: 0;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Diary list — <md-list>/<md-list-item> thumbnail sizing               */
+/* ---------------------------------------------------------------------- */
+.diary-list md-list-item {
+  --md-list-item-leading-image-width: 96px;
+  --md-list-item-leading-image-height: 96px;
+  --md-list-item-leading-image-shape: var(--md-sys-shape-corner-medium);
+  --md-list-item-top-space: 12px;
+  --md-list-item-bottom-space: 12px;
+}
+.diary-list md-list-item img[slot='start'] {
+  width: var(--md-list-item-leading-image-width);
+  height: var(--md-list-item-leading-image-height);
+  border-radius: var(--md-list-item-leading-image-shape);
+  object-fit: cover;
+  display: block;
+}
+
+/* Filter transition (diary.html's category chips) — fade out before the
+   layout collapses, instead of an instant display:none jump-cut. */
+.diary-list [data-diary-category] {
+  transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.diary-list [data-diary-category].is-leaving { opacity: 0; }
+.diary-list [data-diary-category].is-hidden { display: none; }
+
+@media (max-width: 599px) {
+  /* A 96px thumbnail leaves too little room for the headline/supporting
+     text on a phone-width list row — shrink it so the text has space. */
+  .diary-list md-list-item {
+    --md-list-item-leading-image-width: 72px;
+    --md-list-item-leading-image-height: 72px;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Reading progress — real <md-linear-progress>, diary entry pages only.  */
+/* Tracks actual scroll position through .entry-article (see the inline   */
+/* script in diary-entry.njk), not a fake/decorative animation.           */
+/* ---------------------------------------------------------------------- */
+md-linear-progress#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  --md-linear-progress-track-height: 3px;
+  --md-linear-progress-active-indicator-height: 3px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Lightbox — real <md-dialog>, just sized/positioned for image content  */
+/* ---------------------------------------------------------------------- */
+/* md-dialog has no fixed width of its own — left as just a max-width, it
+   shrink-wraps to whatever size its content prefers, so even with a fixed
+   aspect-ratio on the image wrap below, the dialog (and thus the wrap's
+   100%-width box) still resized per photo. An explicit width, not just a
+   ceiling, is what actually makes every photo render in an identical box. */
+md-dialog.lightbox {
+  --md-dialog-container-shape: var(--md-sys-shape-corner-extra-large);
+  width: min(560px, 92vw);
+}
+/* Fixed aspect-ratio box + object-fit: cover (instead of a variable-height
+   contain fit) so every photo occupies the same-sized frame — without
+   this, paging through prev/next made the dialog visibly jump in size
+   between a tall portrait shot and a wide landscape one. */
+.lightbox__image-wrap {
+  position: relative;
+  background: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--md-sys-shape-corner-large);
+  overflow: hidden;
+  margin-bottom: 12px;
+  aspect-ratio: 1;
+}
+.lightbox__image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.lightbox__image-wrap img.is-loading { opacity: 0; }
+#lb-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+#lb-loading.is-hidden { opacity: 0; }
+.lightbox__controls { display: flex; justify-content: space-between; align-items: center; }
+
+/* ---------------------------------------------------------------------- */
+/* Back-to-top FAB — real <md-fab>, this only supplies the floating       */
+/* position (the FAB itself has no opinion on where it sits on a page).   */
+/* Tried expanding this into a FAB menu (share + back-to-top behind a "+" */
+/* trigger) — felt like an unnecessary extra tap for something that was   */
+/* already one tap, so reverted to the plain single FAB.                  */
+/* ---------------------------------------------------------------------- */
+md-fab#back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  transition: opacity var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard),
+              transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+md-fab#back-to-top.is-visible { opacity: 1; transform: scale(1); pointer-events: auto; }
+
+@media (max-width: 599px) {
+  /* .nav-bar is a fixed, 80px-tall, opaque, higher-z-index (40 vs this
+     FAB's 30) bar at the very bottom on compact screens — at bottom:24px
+     the FAB sat underneath it and was effectively invisible. Clear it. */
+  md-fab#back-to-top { right: 16px; bottom: calc(80px + 16px); }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Timeline (about page) — decorative dot/line is illustration, not a     */
+/* component; each entry's content box uses .elevation-surface above.    */
+/* ---------------------------------------------------------------------- */
+.timeline { position: relative; padding-left: 28px; display: flex; flex-direction: column; gap: 20px; }
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--md-sys-color-outline-variant);
+}
+
+.timeline__item { position: relative; }
+
+.timeline__dot {
+  position: absolute;
+  left: -28px;
+  top: 20px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  border: 3px solid var(--md-sys-color-surface);
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Section heading pattern                                               */
+/* ---------------------------------------------------------------------- */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Footer                                                                 */
+/* ---------------------------------------------------------------------- */
+.site-footer {
+  margin-top: 64px;
+  padding: 32px 0 40px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+.site-footer .heart { color: var(--md-sys-color-primary); display: inline-flex; vertical-align: -3px; }
+
+@media (max-width: 599px) {
+  /* Same fix as the FAB and .page-content: the fixed 80px-tall .nav-bar
+     sits on top of whatever's underneath it, so the footer's own bottom
+     padding isn't enough — it needs extra clearance to not get covered. */
+  .site-footer { padding-bottom: calc(40px + 80px); }
+}

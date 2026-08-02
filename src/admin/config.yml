@@ -1,0 +1,97 @@
+backend:
+  name: github
+  repo: Chiehx0220/Candice-Chieh
+  branch: main
+  # Replaces the Netlify OAuth proxy: that relied on postMessage-ing the
+  # token back to whatever origin opened the popup, which never completed
+  # reliably for a site not actually hosted on Netlify (the popup showed
+  # "Authorized" and closed, but the /admin/ tab never received it). This
+  # points at the dedicated Cloudflare Worker in oauth-worker/ instead.
+  base_url: https://candice-chieh-cms-auth.oauth-worker.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+locale: "zh_Hant"
+
+# Required by Decap's config schema even though no collection here uses an
+# "image"/"file" upload widget — all photo fields are plain text URLs
+# (pCloud direct links), so nothing actually gets written here. Points at
+# the site's existing local static-asset folder just so the path is real.
+media_folder: "src/images"
+public_folder: "/images"
+
+collections:
+  - name: "diary"
+    label: "日記"
+    folder: "content/diary"
+    create: true
+    delete: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "標題", name: "title", widget: "string" }
+      - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+      - label: "分類"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "日常", value: "daily" }
+          - { label: "紀念日", value: "anniversary" }
+          - { label: "出遊", value: "trip" }
+          - { label: "美食", value: "food" }
+      - { label: "列表縮圖網址", name: "thumbnail", widget: "string", hint: "貼上 pCloud 直鏈網址" }
+      - { label: "文章頂部大圖網址", name: "heroImage", widget: "string", hint: "貼上 pCloud 直鏈網址" }
+      - { label: "列表摘要（首頁與日記列表共用）", name: "excerpt", widget: "text" }
+      - label: "文中插入的照片（會並排顯示，可留空）"
+        name: "photos"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "照片網址", name: "url", widget: "string", hint: "貼上 pCloud 直鏈網址" }
+      - { label: "前段內文", name: "bodyBefore", widget: "text", hint: "會顯示在文中照片之前" }
+      - { label: "後段內文", name: "body", widget: "markdown", hint: "會顯示在文中照片之後" }
+
+  - name: "gallery"
+    label: "相簿"
+    folder: "content/gallery"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "標題", name: "title", widget: "string" }
+      - label: "分類"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "日常", value: "daily" }
+          - { label: "旅行", value: "trip" }
+          - { label: "紀念日", value: "anniversary" }
+          - { label: "美食", value: "food" }
+      - { label: "照片網址", name: "imageUrl", widget: "string", hint: "貼上 pCloud 直鏈網址" }
+      - { label: "說明文字", name: "caption", widget: "string" }
+      - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+
+  - name: "about"
+    label: "關於我們"
+    files:
+      - name: "about"
+        label: "關於我們頁面"
+        file: "content/about.yml"
+        fields:
+          - { label: "阿蕭頭像網址", name: "avatarA", widget: "string" }
+          - { label: "老郭頭像網址", name: "avatarB", widget: "string" }
+          - { label: "簡介文字", name: "intro", widget: "text" }
+          - label: "個人介紹卡片"
+            name: "profiles"
+            widget: "list"
+            fields:
+              - { label: "名字", name: "name", widget: "string" }
+              - { label: "頭像網址", name: "avatar", widget: "string" }
+              - { label: "介紹文字", name: "bio", widget: "text" }
+          - label: "時間軸"
+            name: "timeline"
+            widget: "list"
+            fields:
+              - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true, required: false, hint: "「持續更新中」特例可以留空，畫面上會自動顯示「現在進行式」" }
+              - { label: "標題", name: "title", widget: "string" }
+              - { label: "內容", name: "body", widget: "text" }
+              - { label: "是否為「持續更新中」特例（不套用日期樣式與陰影，且不需要填日期）", name: "ongoing", widget: "boolean", default: false }

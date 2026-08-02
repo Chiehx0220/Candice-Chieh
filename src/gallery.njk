@@ -1,0 +1,55 @@
+---
+title: 相簿 — 阿蕭跟老郭的生活記錄
+description: 阿蕭與老郭的日常、旅行、紀念日與美食相片牆
+pageKey: gallery
+permalink: gallery.html
+---
+{% extends "base.njk" %}
+{% block content %}
+
+<div class="page-header reveal">
+  <h1 class="md-headline-large is-emphasized">相簿</h1>
+  <p class="md-body-large md-on-surface-variant">日常、旅行、紀念日與美食 — 每一張都是我們的小小片刻。</p>
+</div>
+
+<md-chip-set id="tags" style="margin-bottom:20px" role="group" aria-label="相片分類篩選">
+  <md-filter-chip label="全部" data-filter="all" selected></md-filter-chip>
+  <md-filter-chip label="日常" data-filter="daily"></md-filter-chip>
+  <md-filter-chip label="旅行" data-filter="trip"></md-filter-chip>
+  <md-filter-chip label="紀念日" data-filter="anniversary"></md-filter-chip>
+  <md-filter-chip label="美食" data-filter="food"></md-filter-chip>
+</md-chip-set>
+
+<div class="gallery-grid" data-gallery-scope>
+  {% for photo in gallery %}
+  <figure data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
+    <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
+    <span class="photo-date md-label-small">{{ photo.shortDate }}</span>
+  </figure>
+  {% endfor %}
+</div>
+
+{% endblock %}
+{% block afterFooter %}
+<md-dialog class="lightbox" id="lightbox">
+  <div slot="headline" id="lb-title"></div>
+  <div slot="content">
+    <div class="lightbox__image-wrap">
+      <md-circular-progress id="lb-loading" class="is-hidden" indeterminate></md-circular-progress>
+      <img id="lb-img" src="" alt="">
+    </div>
+    <p class="md-label-medium md-on-surface-variant" id="lb-date" style="margin-bottom:4px"></p>
+    <p class="md-body-medium md-on-surface-variant" id="lb-caption"></p>
+  </div>
+  <div slot="actions" class="lightbox__controls">
+    <md-icon-button id="lb-prev" aria-label="上一張">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 5 8 12l7 7 1.4-1.4L10.8 12l5.6-5.6z"/></svg>
+    </md-icon-button>
+    <md-text-button id="lb-close">關閉</md-text-button>
+    <md-icon-button id="lb-next" aria-label="下一張">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 5 8 6.4 13.6 12 8 17.6 9 19l7-7z"/></svg>
+    </md-icon-button>
+  </div>
+</md-dialog>
+{% endblock %}
+{% block extraScripts %}<script src="{{ '/js/gallery.js' | url }}"></script>{% endblock %}

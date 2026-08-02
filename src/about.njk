@@ -1,0 +1,49 @@
+---
+title: 關於我們 — 阿蕭跟老郭的生活記錄
+description: 關於阿蕭與老郭,還有我們的故事時間軸
+pageKey: about
+permalink: about.html
+---
+{% extends "base.njk" %}
+{% block content %}
+
+<section class="about-hero reveal">
+  <div class="about-hero__avatars">
+    <img src="{{ about.avatarA | url }}" alt="阿蕭的示意頭像">
+    <img src="{{ about.avatarB | url }}" alt="老郭的示意頭像">
+  </div>
+  <h1 class="md-headline-large is-emphasized">阿蕭 &amp; 老郭</h1>
+  <p class="md-body-large md-on-surface-variant" style="max-width:56ch">{{ about.intro }}</p>
+</section>
+
+<section class="profile-grid">
+  {% for p in about.profiles %}
+  <div class="profile-card elevation-surface reveal" style="transition-delay: {{ loop.index0 * 80 }}ms">
+    <md-elevation></md-elevation>
+    <img src="{{ p.avatar | url }}" alt="{{ p.name }}的示意頭像">
+    <h2 class="md-title-large">{{ p.name }}</h2>
+    <p class="md-body-medium md-on-surface-variant">{{ p.bio }}</p>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="about-section">
+  <div class="section-heading">
+    <h2 class="md-headline-small">我們的時間軸</h2>
+  </div>
+  <ol class="timeline">
+    {% for item in about.timeline %}
+    <li class="timeline__item reveal" style="transition-delay: {{ loop.index0 * 60 }}ms">
+      <span class="timeline__dot"></span>
+      <div class="elevation-surface{% if item.ongoing %} is-flat{% endif %}" style="padding:16px 20px">
+        {% if not item.ongoing %}<md-elevation></md-elevation>{% endif %}
+        <p class="md-label-large" style="color:var(--md-sys-color-primary)">{% if item.ongoing %}現在進行式{% else %}{{ item.dateDisplay }}{% endif %}</p>
+        <h3 class="md-title-medium">{{ item.title }}</h3>
+        <p class="md-body-medium md-on-surface-variant">{{ item.body }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{% endblock %}

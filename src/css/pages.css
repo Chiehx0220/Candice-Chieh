@@ -1,0 +1,250 @@
+/* ==========================================================================
+   Page-specific layout
+   ========================================================================== */
+
+.page-content { padding-block: 32px 24px; }
+
+/* ---------------------------------------------------------------------- */
+/* Home — Hero                                                            */
+/* ---------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  overflow: hidden;
+  min-height: 380px;
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
+  margin-bottom: 48px;
+}
+.hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(20,4,12,0.75) 100%);
+}
+.hero__content { position: relative; padding: 32px; display: flex; flex-direction: column; gap: 12px; max-width: 620px; }
+
+@media (max-width: 599px) {
+  .hero { min-height: 320px; }
+  .hero__content { padding: 24px; }
+}
+
+.intro-row { margin-bottom: 56px; }
+.intro-row__text { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; max-width: 60ch; }
+
+.home-section { margin-bottom: 56px; }
+
+/* Single scrolling row instead of a multi-row grid — all 6 previews are
+   swipeable in place without needing to scroll the page down to see the
+   rest, same pattern as .memory-groups. */
+.preview-photo-grid {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.preview-photo-grid figure { position: relative; margin: 0; flex: none; width: 140px; border-radius: var(--md-sys-shape-corner-medium); overflow: hidden; aspect-ratio: 1; cursor: pointer; }
+.preview-photo-grid img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard); }
+.preview-photo-grid figure:hover img { transform: scale(1.06); }
+
+/* Small always-visible timestamp chip — a full-width gradient scrim reads
+   heavier and needs careful z-index/stacking against the photo-date text;
+   a semi-transparent pill in the corner stays legible over any photo
+   without touching the tile's own hover/scale animation. */
+.photo-date {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 2px 8px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: color-mix(in srgb, black 45%, transparent);
+  color: #fff;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Memories ("on this day") — homepage only, only rendered at all when    */
+/* src/_data/memories.js actually found a match for today.                */
+/* ---------------------------------------------------------------------- */
+/* One scrolling row for the groups themselves — this is what keeps the
+   section a fixed compact height no matter how many years of memories
+   pile up (2 groups today, could be 5+ after a few more years), instead
+   of a grid that grows taller row by row. */
+.memory-groups {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.memory-group {
+  flex: none;
+  width: 116px;
+}
+.memory-group p {
+  white-space: nowrap;
+}
+.memory-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.memory-photo {
+  margin: 0;
+  flex: none;
+  width: 116px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--md-sys-color-surface-container-low);
+  transition: transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.memory-photo:hover { transform: translateY(-2px); }
+.memory-photo img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  transition: transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+.memory-photo:hover img { transform: scale(1.06); }
+.memory-photo__caption {
+  display: block;
+  padding: 8px 10px;
+  color: var(--md-sys-color-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Diary list — shared by the homepage preview and the full diary.html    */
+/* list; the rows themselves are real <md-list>/<md-list-item>.           */
+/* ---------------------------------------------------------------------- */
+.page-header { margin-bottom: 8px; display: flex; flex-direction: column; gap: 10px; }
+
+.diary-list { border-radius: var(--md-sys-shape-corner-medium); overflow: hidden; }
+
+/* ---------------------------------------------------------------------- */
+/* Diary entry (article)                                                  */
+/* ---------------------------------------------------------------------- */
+.entry-back { margin-bottom: 12px; margin-left: -12px; }
+.entry-hero { border-radius: var(--md-sys-shape-corner-large); overflow: hidden; aspect-ratio: 16/7; margin-bottom: 24px; }
+.entry-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+.entry-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.entry-article { max-width: 720px; margin-inline: auto; }
+.entry-article p { margin-bottom: 18px; }
+.entry-article p:last-child { margin-bottom: 0; }
+
+.entry-photo-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 28px 0;
+}
+.entry-photo-row img { border-radius: var(--md-sys-shape-corner-medium); aspect-ratio: 4/3; object-fit: cover; width: 100%; }
+@media (max-width: 599px) { .entry-photo-row { grid-template-columns: 1fr; } }
+
+.entry-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 40px auto 0;
+  max-width: 720px;
+}
+.entry-nav a.elevation-surface {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: inherit;
+}
+.entry-nav .next { text-align: right; align-items: flex-end; }
+
+/* ---------------------------------------------------------------------- */
+/* Gallery — plain image grid; not a component, just layout               */
+/* ---------------------------------------------------------------------- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.gallery-grid figure {
+  margin: 0;
+  aspect-ratio: 1;
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+.gallery-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+.gallery-grid figure:hover img { transform: scale(1.06); }
+.gallery-grid figure {
+  transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+              transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+.gallery-grid figure.is-leaving { opacity: 0; transform: scale(0.9); }
+.gallery-grid figure.is-hidden { display: none; }
+
+@media (max-width: 904px) {
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 599px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------------------------------------------------------------------- */
+/* About                                                                  */
+/* ---------------------------------------------------------------------- */
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.about-hero__avatars { display: flex; align-items: center; }
+.about-hero__avatars img {
+  width: 96px; height: 96px; border-radius: var(--md-sys-shape-corner-full); object-fit: cover;
+  border: 4px solid var(--md-sys-color-surface);
+}
+.about-hero__avatars img:first-child { margin-right: -20px; }
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 56px;
+}
+@media (max-width: 767px) { .profile-grid { grid-template-columns: 1fr; } }
+
+.profile-card { padding: 24px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.profile-card img { width: 72px; height: 72px; border-radius: var(--md-sys-shape-corner-full); object-fit: cover; margin-bottom: 4px; }
+
+/* .profile-card carries both .elevation-surface (hover-lift, short
+   transition) and .reveal (scroll-entrance, long transition) — both set
+   the `transition` shorthand, so the plain-CSS-cascade winner would drop
+   one of them. Split explicitly: the long/emphasized entrance transition
+   plays once on the way to .is-visible, then the short hover transition
+   takes over for everything after. */
+.profile-card.reveal {
+  transition: opacity var(--md-sys-motion-duration-long) var(--md-sys-motion-easing-emphasized-decelerate),
+              transform var(--md-sys-motion-duration-long) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+.profile-card.reveal.is-visible {
+  transition: transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+              background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+
+.about-section { margin-bottom: 56px; }

@@ -1,0 +1,18 @@
+avatarA: https://filedn.eu/lL0yySiV5eQ0n2GTMfqKlYQ/Candice-Chieh/%E5%A4%A7%E9%A0%AD%E7%85%A7/%E5%82%91%E5%A4%A7%E9%A0%AD.jpg
+avatarB: https://filedn.eu/lL0yySiV5eQ0n2GTMfqKlYQ/Candice-Chieh/%E5%A4%A7%E9%A0%AD%E7%85%A7/%E8%AD%BD%E5%A4%A7%E9%A0%AD.jpg
+intro: 這裡放著關於我們的一些小事,還有一起走過的重要時刻。
+profiles:
+  - name: 阿蕭
+    avatar: https://filedn.eu/lL0yySiV5eQ0n2GTMfqKlYQ/Candice-Chieh/%E5%A4%A7%E9%A0%AD%E7%85%A7/%E5%82%91%E5%A4%A7%E9%A0%AD.jpg
+    bio: 超GAY
+  - name: 老郭
+    avatar: https://filedn.eu/lL0yySiV5eQ0n2GTMfqKlYQ/Candice-Chieh/%E5%A4%A7%E9%A0%AD%E7%85%A7/%E8%AD%BD%E5%A4%A7%E9%A0%AD.jpg
+    bio: 超MAN
+timeline:
+  - date: 1990-08-01
+    title: 第一次見面
+    body: 傑:如果把肯德基爺爺的領結看成是身體就回不去了。
+    ongoing: false
+  - title: 持續更新中…
+    body: 繼續一起開屁眼派對!!!!
+    ongoing: true

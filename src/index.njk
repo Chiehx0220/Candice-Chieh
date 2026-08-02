@@ -1,0 +1,107 @@
+---
+title: 阿蕭跟老郭的生活記錄
+description: 阿蕭跟老郭的生活記錄 — 紀錄情侶日常、相片與小小的紀念日
+pageKey: home
+---
+{% extends "base.njk" %}
+{% block content %}
+
+<section class="hero reveal">
+  <img src="{{ 'images/hero-home.svg' | url }}" alt="阿蕭與老郭的示意合照">
+  <div class="hero__content">
+    <p class="md-label-large" style="opacity:.85">阿蕭 × 老郭</p>
+    <h1 class="md-display-medium is-emphasized">阿蕭跟老郭的生活記錄</h1>
+    <p class="md-body-large" style="max-width:46ch">紀錄我們的日常、拍下的每張照片,還有一起走過的紀念日。這裡是屬於我們兩個人的小小角落。</p>
+  </div>
+</section>
+
+{% if memories.length %}
+<section class="home-section reveal">
+  <div class="section-heading">
+    <h2 class="md-headline-small">回憶</h2>
+    <md-text-button href="{{ 'gallery.html' | url }}">去相簿看看</md-text-button>
+  </div>
+  <div class="memory-groups" data-gallery-scope>
+    {% for group in memories %}
+    <div class="memory-group">
+      <p class="md-label-large" style="color:var(--md-sys-color-primary)">{{ group.label }}</p>
+      <div class="memory-photos">
+        {% for photo in group.photos %}
+        <figure class="memory-photo" data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
+          <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
+          {% if photo.caption %}<span class="memory-photo__caption md-body-small">{{ photo.caption }}</span>{% endif %}
+        </figure>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="intro-row reveal">
+  <div class="intro-row__text">
+    <p class="md-label-large" style="color:var(--md-sys-color-primary)">關於這裡</p>
+    <h2 class="md-headline-medium">兩個人,一點一滴的日常</h2>
+    <p class="md-body-large md-on-surface-variant">從第一次約會到現在,我們喜歡把平凡的小事寫下來、拍下來。這個網站就是我們的生活資料庫 — 想回味的時候,隨時可以回來看看。</p>
+    <md-outlined-button href="{{ 'about.html' | url }}">認識我們</md-outlined-button>
+  </div>
+</section>
+
+<section class="home-section reveal">
+  <div class="section-heading">
+    <h2 class="md-headline-small">最新日記</h2>
+    <md-text-button href="{{ 'diary.html' | url }}">查看全部</md-text-button>
+  </div>
+  <md-list class="diary-list elevation-surface is-flat">
+    {% for entry in diary | limit(3) %}
+    <md-list-item type="link" href="{{ ('/diary/' + entry.slug + '.html') | url }}">
+      <img slot="start" src="{{ entry.thumbnail | url }}" alt="{{ entry.imageAlt }}">
+      <div slot="overline">{{ categories.diary[entry.category] }} · {{ entry.shortDate }}</div>
+      <div slot="headline">{{ entry.title }}</div>
+      <div slot="supporting-text">{{ entry.excerpt }}</div>
+    </md-list-item>
+    {% if not loop.last %}<md-divider></md-divider>{% endif %}
+    {% endfor %}
+  </md-list>
+</section>
+
+<section class="home-section reveal">
+  <div class="section-heading">
+    <h2 class="md-headline-small">相片牆</h2>
+    <md-text-button href="{{ 'gallery.html' | url }}">查看全部</md-text-button>
+  </div>
+  <div class="preview-photo-grid" data-gallery-scope>
+    {% for photo in gallery | limit(6) %}
+    <figure data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
+      <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
+      <span class="photo-date md-label-small">{{ photo.shortDate }}</span>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
+{% block afterFooter %}
+<md-dialog class="lightbox" id="lightbox">
+  <div slot="headline" id="lb-title"></div>
+  <div slot="content">
+    <div class="lightbox__image-wrap">
+      <md-circular-progress id="lb-loading" class="is-hidden" indeterminate></md-circular-progress>
+      <img id="lb-img" src="" alt="">
+    </div>
+    <p class="md-label-medium md-on-surface-variant" id="lb-date" style="margin-bottom:4px"></p>
+    <p class="md-body-medium md-on-surface-variant" id="lb-caption"></p>
+  </div>
+  <div slot="actions" class="lightbox__controls">
+    <md-icon-button id="lb-prev" aria-label="上一張">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 5 8 12l7 7 1.4-1.4L10.8 12l5.6-5.6z"/></svg>
+    </md-icon-button>
+    <md-text-button id="lb-close">關閉</md-text-button>
+    <md-icon-button id="lb-next" aria-label="下一張">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 5 8 6.4 13.6 12 8 17.6 9 19l7-7z"/></svg>
+    </md-icon-button>
+  </div>
+</md-dialog>
+{% endblock %}
+{% block extraScripts %}<script src="{{ '/js/gallery.js' | url }}"></script>{% endblock %}

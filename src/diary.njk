@@ -1,0 +1,104 @@
+---
+title: 日記 — 阿蕭跟老郭的生活記錄
+description: 阿蕭與老郭的日常日記列表
+pageKey: diary
+permalink: diary.html
+---
+{% extends "base.njk" %}
+{% block content %}
+
+<div class="page-header reveal">
+  <h1 class="md-headline-large is-emphasized">日記</h1>
+  <p class="md-body-large md-on-surface-variant">大大小小的日子,都值得被寫下來。</p>
+</div>
+
+<md-chip-set id="tags" style="margin-bottom:20px" role="group" aria-label="日記分類篩選">
+  <md-filter-chip label="全部" data-filter="all" selected></md-filter-chip>
+  <md-filter-chip label="日常" data-filter="daily"></md-filter-chip>
+  <md-filter-chip label="紀念日" data-filter="anniversary"></md-filter-chip>
+  <md-filter-chip label="出遊" data-filter="trip"></md-filter-chip>
+  <md-filter-chip label="美食" data-filter="food"></md-filter-chip>
+</md-chip-set>
+
+<md-list class="diary-list elevation-surface is-flat reveal" id="diary-list">
+  {% for entry in diary %}
+  <md-list-item type="link" data-diary-category="{{ entry.category }}" href="{{ ('/diary/' + entry.slug + '.html') | url }}">
+    <img slot="start" src="{{ entry.thumbnail | url }}" alt="{{ entry.imageAlt }}">
+    <div slot="overline">{{ categories.diary[entry.category] }} · {{ entry.shortDate }}</div>
+    <div slot="headline">{{ entry.title }}</div>
+    <div slot="supporting-text">{{ entry.excerpt }}</div>
+  </md-list-item>
+  {% if not loop.last %}<md-divider data-diary-category="{{ entry.category }}"></md-divider>{% endif %}
+  {% endfor %}
+</md-list>
+
+<p id="diary-empty" class="md-body-medium md-on-surface-variant is-hidden" style="text-align:center;margin-top:32px">這個分類目前還沒有日記,期待我們之後補上 🩷</p>
+<p id="diary-generic-msg" class="md-body-medium md-on-surface-variant" style="text-align:center;margin-top:32px">更多日記,等著我們一起慢慢累積 🩷</p>
+
+{% endblock %}
+{% block extraScripts %}
+<script>
+  customElements.whenDefined('md-filter-chip').then(function () {
+    var chipSet = document.getElementById('tags');
+    var list = document.getElementById('diary-list');
+    var children = Array.prototype.slice.call(list.children); // md-list-item / md-divider, alternating
+    var emptyMsg = document.getElementById('diary-empty');
+    var genericMsg = document.getElementById('diary-generic-msg');
+
+    function setVisible(el, visible) {
+      if (visible) {
+        el.classList.remove('is-hidden');
+        requestAnimationFrame(function () { el.classList.remove('is-leaving'); });
+      } else {
+        el.classList.add('is-leaving');
+        setTimeout(function () { el.classList.add('is-hidden'); }, 150);
+      }
+    }
+
+    function matches(el, category) {
+      return category === 'all' || el.dataset.diaryCategory === category;
+    }
+
+    chipSet.addEventListener('click', function (e) {
+      var chip = e.target.closest('md-filter-chip');
+      if (!chip) return;
+      var chips = Array.prototype.slice.call(chipSet.querySelectorAll('md-filter-chip'));
+      chips.forEach(function (c) { if (c !== chip) c.selected = false; });
+      chip.selected = true;
+      var category = chip.dataset.filter;
+
+      var matchCount = 0;
+      children.forEach(function (el) {
+        if (el.tagName === 'MD-LIST-ITEM') {
+          var match = matches(el, category);
+          if (match) matchCount++;
+          setVisible(el, match);
+        }
+      });
+      // A divider only makes sense between two entries that are BOTH still
+      // visible — tagging it with just the preceding entry's category (as
+      // the markup does, since there's no clean "between two categories"
+      // label) left a dangling divider under the last visible item of a
+      // filtered category whenever the next entry (a different category)
+      // got hidden. Recompute visibility from the actual DOM neighbors
+      // instead of that static tag.
+      children.forEach(function (el, i) {
+        if (el.tagName !== 'MD-DIVIDER') return;
+        var prevItem = children[i - 1];
+        var nextItem = children[i + 1];
+        var visible = !!prevItem && !!nextItem && matches(prevItem, category) && matches(nextItem, category);
+        setVisible(el, visible);
+      });
+
+      // The list itself (an elevation-surface card) keeps its own padding
+      // even with zero visible items, which otherwise leaves a hollow
+      // rounded bar floating on the page — hide the whole card and swap in
+      // a dedicated empty-state message instead of a silently empty box.
+      var isEmpty = matchCount === 0;
+      list.classList.toggle('is-hidden', isEmpty);
+      emptyMsg.classList.toggle('is-hidden', !isEmpty);
+      genericMsg.classList.toggle('is-hidden', isEmpty);
+    });
+  });
+</script>
+{% endblock %}
