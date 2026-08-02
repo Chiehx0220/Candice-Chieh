@@ -177,6 +177,18 @@
   margin-bottom: 20px;
 }
 
+/* #gallery-grid-view carries .gallery-grid (display: grid, below) *and*
+   gets .is-hidden toggled on it by gallery-map.js when switching to map
+   view. .is-hidden's plain `display: none` (base.css) and .gallery-grid's
+   `display: grid` (this file) are equal specificity, and this file loads
+   after base.css — so on a tie the browser keeps `display: grid` and the
+   grid never actually disappears. These ID-qualified rules outrank both
+   and settle it regardless of source order. */
+#gallery-grid-view.is-hidden,
+#gallery-map-view.is-hidden {
+  display: none;
+}
+
 .gallery-map {
   width: 100%;
   height: 480px;
