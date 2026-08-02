@@ -78,6 +78,28 @@
     }
 
     customElements.whenDefined('md-dialog').then(function () {
+      // Material's own dialog content region is styled `overflow-y:
+      // scroll` (always-visible track) rather than `auto`, presumably so
+      // the dialog doesn't jump width when paging between photos with
+      // captions of different lengths — but that means a scrollbar shows
+      // even when there's nothing to scroll, which is exactly what
+      // .lightbox__image-wrap in components.css is sized to guarantee.
+      // There's no public CSS custom property or ::part() for this
+      // region, so this reaches directly into the dialog's shadow root
+      // (open, so JS can see it even though an external stylesheet
+      // can't) and hides just the scrollbar chrome — overflow-y itself
+      // is untouched, so content would still be reachable by scrolling
+      // in the rare case a caption really is too long to fit. Tied to
+      // the pinned @material/web@2.5.0 import in base.njk; the class
+      // name here isn't a public API and could change on a version bump.
+      if (dialog.shadowRoot) {
+        var hideScrollbar = document.createElement('style');
+        hideScrollbar.textContent =
+          '.scroller { scrollbar-width: none; }' +
+          '.scroller::-webkit-scrollbar { width: 0; height: 0; }';
+        dialog.shadowRoot.appendChild(hideScrollbar);
+      }
+
       figures.forEach(function (fig) {
         fig.addEventListener('click', function () {
           currentScope = fig.closest('[data-gallery-scope]');
