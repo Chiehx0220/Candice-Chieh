@@ -201,6 +201,35 @@
    the map, so a plain 0 keeps it safely under the nav. */
 .gallery-map .leaflet-pane { z-index: 0; }
 
+/* Custom pin marker (see markerIcon() in gallery-map.js) — Leaflet's
+   div-icon wrapper carries its own default box/border from leaflet.css
+   that would otherwise show behind the SVG pin's transparent corners. */
+.gallery-map .leaflet-div-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Reskins Leaflet's own popup chrome (a plain white box + arrow by
+   default) to match this site's surface/shape tokens, including in
+   dark mode — the .leaflet-popup-content-wrapper/-tip classes are
+   Leaflet's own, not something gallery-map.js generates. */
+.gallery-map .leaflet-popup-content-wrapper {
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+}
+.gallery-map .leaflet-popup-content { margin: 12px; }
+.gallery-map .leaflet-popup-tip { background: var(--md-sys-color-surface-container-high); }
+.gallery-map .leaflet-popup-close-button {
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+.gallery-map .leaflet-control-zoom a {
+  border-radius: var(--md-sys-shape-corner-small) !important;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
 /* A clickable <a> now (opens the same lightbox the grid uses — see
    gallery-map.js), not just a static caption card. */
 .gallery-map__popup { display: block; width: 180px; }
