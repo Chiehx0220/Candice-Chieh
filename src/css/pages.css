@@ -203,7 +203,8 @@
 
 /* A clickable <a> now (opens the same lightbox the grid uses — see
    gallery-map.js), not just a static caption card. */
-.gallery-map__popup { display: block; width: 180px; cursor: pointer; }
+.gallery-map__popup { display: block; width: 180px; }
+a.gallery-map__popup { cursor: pointer; }
 .gallery-map__popup img {
   width: 100%;
   aspect-ratio: 4/3;
@@ -212,9 +213,37 @@
   margin-bottom: 6px;
   transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
 }
-.gallery-map__popup:hover img { opacity: 0.85; }
+a.gallery-map__popup:hover img { opacity: 0.85; }
 .gallery-map__popup p { margin: 0; }
 .gallery-map__popup p + p { margin-top: 2px; }
+
+/* Several photos sharing one location (see groupByLocation() in
+   gallery-map.js) get one marker with a small thumbnail grid instead of
+   one big photo, so every photo at that spot stays individually
+   reachable rather than only whichever one happened to render on top. */
+.gallery-map__popup--group { width: 210px; }
+.gallery-map__popup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+}
+.gallery-map__popup-thumb {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  overflow: hidden;
+  cursor: pointer;
+}
+.gallery-map__popup-thumb img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+  margin-bottom: 0;
+  border-radius: 0;
+}
+.gallery-map__popup-thumb:hover img { opacity: 0.75; }
 
 @media (max-width: 599px) {
   .gallery-map { height: 360px; }

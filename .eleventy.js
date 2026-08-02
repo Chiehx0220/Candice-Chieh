@@ -35,6 +35,7 @@ module.exports = function (eleventyConfig) {
           caption: p.caption,
           imageUrl: p.imageUrl,
           category: p.category,
+          location: p.location,
         };
       });
   });

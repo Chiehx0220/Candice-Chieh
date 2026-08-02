@@ -38,13 +38,30 @@
       });
     }
 
-    // The whole popup is a link (not just a caption card) so a marker
-    // doubles as another entry point into the same lightbox the grid
-    // uses — see the delegated click handler below, which finds the
-    // matching [data-gallery-item] by slug and just clicks it, reusing
-    // gallery.js's existing lightbox/prev/next logic rather than
-    // duplicating it.
-    function renderPopup(photo) {
+    // Several photos can share one location string, which geocodes to
+    // the exact same lat/lng every time (see the cache in src/_data/
+    // gallery.js) — grouping on that identity, rather than a proximity
+    // threshold, is enough to catch them and put one marker per distinct
+    // spot instead of several stacked invisibly on top of each other.
+    function groupByLocation(list) {
+      var groups = [];
+      var byKey = {};
+      list.forEach(function (photo) {
+        var key = photo.lat + ',' + photo.lng;
+        if (!byKey[key]) {
+          byKey[key] = { lat: photo.lat, lng: photo.lng, photos: [] };
+          groups.push(byKey[key]);
+        }
+        byKey[key].photos.push(photo);
+      });
+      return groups;
+    }
+
+    // Every popup link opens the same lightbox the grid uses (not a
+    // second image viewer) — see the delegated click handler below,
+    // which finds the matching [data-gallery-item] by slug and just
+    // clicks it, reusing gallery.js's existing lightbox/prev/next logic.
+    function renderSinglePopup(photo) {
       return (
         '<a class="gallery-map__popup" href="#" data-open-slug="' + escapeHtml(photo.slug) + '">' +
         '<img src="' + escapeHtml(photo.imageUrl) + '" alt="">' +
@@ -52,6 +69,30 @@
         '<p class="md-body-small md-on-surface-variant">' +
         escapeHtml(photo.date) + (photo.caption ? ' · ' + escapeHtml(photo.caption) : '') +
         '</p></a>'
+      );
+    }
+
+    // Several photos, same spot: a small thumbnail grid instead of one
+    // big photo, so all of them are reachable from a single marker
+    // rather than only whichever one happened to be added to the map
+    // last (and thus rendered on top).
+    function renderGroupPopup(group) {
+      var heading = group.photos[0].location || (group.photos.length + ' 張照片');
+      var thumbs = group.photos
+        .map(function (photo) {
+          return (
+            '<a class="gallery-map__popup-thumb" href="#" data-open-slug="' + escapeHtml(photo.slug) + '" title="' + escapeHtml(photo.title) + '">' +
+            '<img src="' + escapeHtml(photo.imageUrl) + '" alt="">' +
+            '</a>'
+          );
+        })
+        .join('');
+      return (
+        '<div class="gallery-map__popup gallery-map__popup--group">' +
+        '<p class="md-title-small">' + escapeHtml(heading) + '</p>' +
+        '<p class="md-body-small md-on-surface-variant">' + group.photos.length + ' 張照片</p>' +
+        '<div class="gallery-map__popup-grid">' + thumbs + '</div>' +
+        '</div>'
       );
     }
 
@@ -76,9 +117,13 @@
         maxZoom: 19,
       }).addTo(map);
 
-      markers = photos.map(function (photo) {
-        var marker = L.marker([photo.lat, photo.lng]).bindPopup(renderPopup(photo));
-        marker.category = photo.category;
+      markers = groupByLocation(photos).map(function (group) {
+        var popupHtml = group.photos.length === 1 ? renderSinglePopup(group.photos[0]) : renderGroupPopup(group);
+        var marker = L.marker([group.lat, group.lng]).bindPopup(popupHtml);
+        // A group is still relevant to a category filter if ANY photo in
+        // it matches — hiding the whole marker only when every photo at
+        // that spot is filtered out, not just some of them.
+        marker.categories = group.photos.map(function (p) { return p.category; });
         marker.addTo(map);
         return marker;
       });
@@ -93,7 +138,7 @@
     function applyCategoryFilter(category) {
       if (!map) return;
       markers.forEach(function (m) {
-        var match = category === 'all' || m.category === category;
+        var match = category === 'all' || m.categories.indexOf(category) !== -1;
         if (match && !map.hasLayer(m)) m.addTo(map);
         if (!match && map.hasLayer(m)) map.removeLayer(m);
       });
