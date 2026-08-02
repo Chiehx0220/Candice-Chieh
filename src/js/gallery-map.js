@@ -26,6 +26,11 @@
 
     var map = null;
     var markers = [];
+    // Floor for fitToVisibleMarkers() below — most photos are expected to
+    // be somewhere in Taiwan, and the whole island should stay visible by
+    // default, not just the immediate markers' own tight bounding box
+    // (which for a single photo would zoom in to a street level view).
+    var TAIWAN_BOUNDS = L.latLngBounds([21.5, 119.0], [25.6, 122.3]);
 
     function escapeHtml(str) {
       return String(str || '').replace(/[&<>"']/g, function (c) {
@@ -33,22 +38,34 @@
       });
     }
 
+    // The whole popup is a link (not just a caption card) so a marker
+    // doubles as another entry point into the same lightbox the grid
+    // uses — see the delegated click handler below, which finds the
+    // matching [data-gallery-item] by slug and just clicks it, reusing
+    // gallery.js's existing lightbox/prev/next logic rather than
+    // duplicating it.
     function renderPopup(photo) {
       return (
-        '<div class="gallery-map__popup">' +
+        '<a class="gallery-map__popup" href="#" data-open-slug="' + escapeHtml(photo.slug) + '">' +
         '<img src="' + escapeHtml(photo.imageUrl) + '" alt="">' +
         '<p class="md-title-small">' + escapeHtml(photo.title) + '</p>' +
         '<p class="md-body-small md-on-surface-variant">' +
         escapeHtml(photo.date) + (photo.caption ? ' · ' + escapeHtml(photo.caption) : '') +
-        '</p></div>'
+        '</p></a>'
       );
     }
 
+    // Always includes all of Taiwan as a floor, then extends further out
+    // only if a visible marker actually falls outside it (e.g. an
+    // overseas trip photo) — so the default view is never smaller than
+    // "the whole island", whether that's zero markers, one marker, or a
+    // tight cluster.
     function fitToVisibleMarkers() {
-      var visible = markers.filter(function (m) { return map.hasLayer(m); });
-      if (!visible.length) return;
-      var group = L.featureGroup(visible);
-      map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 15 });
+      var bounds = L.latLngBounds(TAIWAN_BOUNDS.getSouthWest(), TAIWAN_BOUNDS.getNorthEast());
+      markers.forEach(function (m) {
+        if (map.hasLayer(m)) bounds.extend(m.getLatLng());
+      });
+      map.fitBounds(bounds.pad(0.06));
     }
 
     function initMap() {
@@ -114,6 +131,17 @@
       gridChip.selected = false;
       mapChip.selected = true;
       showMap();
+    });
+
+    // Delegated (not bound per-marker) because Leaflet tears down and
+    // rebuilds popup content each time it opens — a listener attached to
+    // the popup HTML itself would need re-attaching on every open.
+    mapEl.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-open-slug]');
+      if (!link) return;
+      e.preventDefault();
+      var fig = document.querySelector('[data-gallery-item][data-slug="' + CSS.escape(link.dataset.openSlug) + '"]');
+      if (fig) fig.click();
     });
 
     var tagsChipSet = document.getElementById('tags');

@@ -27,6 +27,7 @@ module.exports = function (eleventyConfig) {
       .filter(function (p) { return typeof p.lat === "number" && typeof p.lng === "number"; })
       .map(function (p) {
         return {
+          slug: p.slug,
           lat: p.lat,
           lng: p.lng,
           title: p.title,

@@ -32,7 +32,7 @@ permalink: gallery.html
 
 <div id="gallery-grid-view" class="gallery-grid" data-gallery-scope>
   {% for photo in gallery %}
-  <figure data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
+  <figure data-gallery-item data-slug="{{ photo.slug }}" data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
     <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
     <span class="photo-date md-label-small">{{ photo.shortDate }}</span>
   </figure>

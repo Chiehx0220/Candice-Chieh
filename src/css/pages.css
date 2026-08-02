@@ -201,14 +201,18 @@
    the map, so a plain 0 keeps it safely under the nav. */
 .gallery-map .leaflet-pane { z-index: 0; }
 
-.gallery-map__popup { width: 180px; }
+/* A clickable <a> now (opens the same lightbox the grid uses — see
+   gallery-map.js), not just a static caption card. */
+.gallery-map__popup { display: block; width: 180px; cursor: pointer; }
 .gallery-map__popup img {
   width: 100%;
   aspect-ratio: 4/3;
   object-fit: cover;
   border-radius: var(--md-sys-shape-corner-small);
   margin-bottom: 6px;
+  transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
 }
+.gallery-map__popup:hover img { opacity: 0.85; }
 .gallery-map__popup p { margin: 0; }
 .gallery-map__popup p + p { margin-top: 2px; }
 
