@@ -401,17 +401,26 @@ md-dialog.lightbox {
    this, paging through prev/next made the dialog visibly jump in size
    between a tall portrait shot and a wide landscape one.
 
-   On mobile the dialog's own 92vw width cap already keeps this small
-   (narrow viewport -> narrow dialog -> a small square), so the problem
-   below is desktop-only: there the dialog sits at its full fixed 560px,
-   and a wide-but-short browser window let the square grow tall enough
-   to push the headline/caption/controls below the fold, forcing the
-   dialog to scroll internally to reach them. `calc(100vh - 220px)`
-   reserves a fixed 220px for that surrounding chrome (headline + date +
-   caption + actions row + the dialog's own padding — measured from the
-   rendered dialog) so the square always shrinks to leave room for it,
-   with a 160px floor so it can't collapse away to nothing on very short
-   viewports (e.g. a phone in landscape). */
+   md-dialog's own default container height caps at min(560px, 100vh -
+   48px) — a HARD 560px ceiling on any normal-to-tall desktop window,
+   completely independent of how much taller the viewport actually is.
+   The square photo, left to just follow the dialog's ~497px content
+   width, doesn't fit inside that budget once the headline (~72px),
+   date/caption text (~52px) and actions row (~80px) are subtracted —
+   about 212px of fixed chrome, leaving ~348px for the photo, not 497px.
+   Mobile never hit this because there the dialog's 92vw width cap
+   already produces a photo well under that budget on its own.
+
+   The chrome is subtracted from the dialog's own capped height
+   directly (min(560px, 100vh - 48px)), not from a plain 100vh — the
+   very first version of this fix compared that against the dialog's
+   ~497px content width and let the *width* branch win on any viewport
+   taller than ~717px, silently discarding the whole calculation. The
+   outer min(100%, ...) is still needed the other way around, purely as
+   a narrow-mobile safety net (a ~360-400px-wide phone has less content
+   width than this budget would otherwise allow), and a 160px floor
+   keeps it from collapsing away to nothing on a short viewport (e.g. a
+   phone in landscape). */
 .lightbox__image-wrap {
   position: relative;
   background: var(--md-sys-color-surface-container-highest);
@@ -419,7 +428,7 @@ md-dialog.lightbox {
   overflow: hidden;
   margin: 0 auto 12px;
   aspect-ratio: 1;
-  width: min(100%, max(160px, calc(100vh - 220px)));
+  width: min(100%, max(160px, calc(min(560px, calc(100vh - 48px)) - 212px)));
 }
 .lightbox__image-wrap img {
   width: 100%;
