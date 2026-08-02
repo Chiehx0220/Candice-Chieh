@@ -77,34 +77,12 @@
       openLightbox(currentIndex);
     }
 
-    // Container-transform-style open: the clicked grid photo grows into
-    // the lightbox frame instead of the dialog just appearing over it.
-    // #lb-img already carries view-transition-name: lightbox-photo
-    // permanently (components.css) — only the clicked thumbnail needs
-    // tagging here, and only for the instant it takes the browser to
-    // snapshot the "before" frame; it's untagged again before
-    // openLightbox() runs so the two images never carry the same name
-    // at once. Falls straight through to a plain openLightbox() when the
-    // View Transitions API isn't available — that's the same behavior
-    // this had before, so there's nothing missing on those browsers.
-    function openLightboxTransitioned(index, sourceImg) {
-      if (typeof document.startViewTransition !== 'function' || !sourceImg) {
-        openLightbox(index);
-        return;
-      }
-      sourceImg.style.viewTransitionName = 'lightbox-photo';
-      document.startViewTransition(function () {
-        sourceImg.style.viewTransitionName = '';
-        openLightbox(index);
-      });
-    }
-
     customElements.whenDefined('md-dialog').then(function () {
       figures.forEach(function (fig) {
         fig.addEventListener('click', function () {
           currentScope = fig.closest('[data-gallery-scope]');
           refreshVisible();
-          openLightboxTransitioned(visibleList.indexOf(fig), fig.querySelector('img'));
+          openLightbox(visibleList.indexOf(fig));
         });
       });
 

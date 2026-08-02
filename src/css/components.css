@@ -399,14 +399,19 @@ md-dialog.lightbox {
 /* Fixed aspect-ratio box + object-fit: cover (instead of a variable-height
    contain fit) so every photo occupies the same-sized frame — without
    this, paging through prev/next made the dialog visibly jump in size
-   between a tall portrait shot and a wide landscape one. */
+   between a tall portrait shot and a wide landscape one. Capped by 55vh
+   (not just the dialog's own 92vw-based width) so a short/landscape
+   viewport can't force the square taller than the window — without this,
+   the headline/caption/controls below it got pushed out and the dialog
+   had to scroll internally to reach them. */
 .lightbox__image-wrap {
   position: relative;
   background: var(--md-sys-color-surface-container-highest);
   border-radius: var(--md-sys-shape-corner-large);
   overflow: hidden;
-  margin-bottom: 12px;
+  margin: 0 auto 12px;
   aspect-ratio: 1;
+  width: min(100%, 55vh);
 }
 .lightbox__image-wrap img {
   width: 100%;
@@ -414,18 +419,8 @@ md-dialog.lightbox {
   object-fit: cover;
   display: block;
   transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
-  /* Permanently named (there's only ever one #lb-img, unlike the many
-     grid thumbnails) so js/gallery.js only has to tag the clicked
-     thumbnail on open — see openLightboxTransitioned() there. Inert
-     while the dialog is closed: a closed <dialog> isn't rendered, so it
-     never conflicts with whichever thumbnail is mid-transition. */
-  view-transition-name: lightbox-photo;
 }
 .lightbox__image-wrap img.is-loading { opacity: 0; }
-::view-transition-group(lightbox-photo) {
-  animation-duration: var(--md-sys-motion-duration-long);
-  animation-timing-function: var(--md-sys-motion-easing-emphasized);
-}
 #lb-loading {
   position: absolute;
   top: 50%;

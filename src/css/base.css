@@ -88,27 +88,6 @@ svg { display: block; }
 }
 .no-reveal-support .reveal { opacity: 1; transform: none; }
 
-/* ---- View Transitions (container-transform shared elements) ----
-   `@view-transition` opts same-origin navigations into the View
-   Transitions API so a shared `view-transition-name` (see .entry-hero
-   img in pages.css and #lb-img in components.css) can morph across a
-   full page navigation, not just within one document — that's what lets
-   a diary-list thumbnail grow straight into the entry page's hero image
-   instead of a hard cut. Browsers without the API ignore this at-rule
-   and everything just navigates/opens normally; there is no fallback to
-   maintain because there's nothing to fall back from. */
-@view-transition {
-  navigation: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
-}
-
 /* ---- Layout helpers ---- */
 .container {
   max-width: 1040px;
