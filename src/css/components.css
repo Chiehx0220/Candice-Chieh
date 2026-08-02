@@ -399,11 +399,19 @@ md-dialog.lightbox {
 /* Fixed aspect-ratio box + object-fit: cover (instead of a variable-height
    contain fit) so every photo occupies the same-sized frame — without
    this, paging through prev/next made the dialog visibly jump in size
-   between a tall portrait shot and a wide landscape one. Capped by 55vh
-   (not just the dialog's own 92vw-based width) so a short/landscape
-   viewport can't force the square taller than the window — without this,
-   the headline/caption/controls below it got pushed out and the dialog
-   had to scroll internally to reach them. */
+   between a tall portrait shot and a wide landscape one.
+
+   On mobile the dialog's own 92vw width cap already keeps this small
+   (narrow viewport -> narrow dialog -> a small square), so the problem
+   below is desktop-only: there the dialog sits at its full fixed 560px,
+   and a wide-but-short browser window let the square grow tall enough
+   to push the headline/caption/controls below the fold, forcing the
+   dialog to scroll internally to reach them. `calc(100vh - 220px)`
+   reserves a fixed 220px for that surrounding chrome (headline + date +
+   caption + actions row + the dialog's own padding — measured from the
+   rendered dialog) so the square always shrinks to leave room for it,
+   with a 160px floor so it can't collapse away to nothing on very short
+   viewports (e.g. a phone in landscape). */
 .lightbox__image-wrap {
   position: relative;
   background: var(--md-sys-color-surface-container-highest);
@@ -411,7 +419,7 @@ md-dialog.lightbox {
   overflow: hidden;
   margin: 0 auto 12px;
   aspect-ratio: 1;
-  width: min(100%, 55vh);
+  width: min(100%, max(160px, calc(100vh - 220px)));
 }
 .lightbox__image-wrap img {
   width: 100%;
