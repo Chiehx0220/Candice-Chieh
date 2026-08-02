@@ -37,6 +37,7 @@ permalink: diary.html
 
 {% endblock %}
 {% block extraScripts %}
+<script src="{{ '/js/diary-transitions.js' | url }}"></script>
 <script>
   customElements.whenDefined('md-filter-chip').then(function () {
     var chipSet = document.getElementById('tags');

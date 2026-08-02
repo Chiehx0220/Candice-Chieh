@@ -42,9 +42,17 @@ module.exports = function () {
       category: data.category,
       thumbnail: data.thumbnail,
       heroImage: data.heroImage,
-      imageAlt: data.imageAlt,
+      // Not a CMS field — nobody wants to hand-write alt text per entry.
+      // The title is always required and describes the entry well enough
+      // to stand in for thumbnail/hero alt text.
+      imageAlt: data.imageAlt || data.title,
       excerpt: data.excerpt,
-      photos: data.photos || [],
+      // Same reasoning for inline photos: no per-photo alt field in the
+      // CMS, so derive one from the entry title + position.
+      photos: (data.photos || []).map((photo, i) => ({
+        ...photo,
+        alt: photo.alt || `${data.title || "日記照片"} 照片 ${i + 1}`,
+      })),
       bodyBeforeHtml: md.render(data.bodyBefore || ""),
       bodyAfterHtml: md.render(content || ""),
     };

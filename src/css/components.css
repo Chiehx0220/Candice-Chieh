@@ -414,8 +414,18 @@ md-dialog.lightbox {
   object-fit: cover;
   display: block;
   transition: opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+  /* Permanently named (there's only ever one #lb-img, unlike the many
+     grid thumbnails) so js/gallery.js only has to tag the clicked
+     thumbnail on open — see openLightboxTransitioned() there. Inert
+     while the dialog is closed: a closed <dialog> isn't rendered, so it
+     never conflicts with whichever thumbnail is mid-transition. */
+  view-transition-name: lightbox-photo;
 }
 .lightbox__image-wrap img.is-loading { opacity: 0; }
+::view-transition-group(lightbox-photo) {
+  animation-duration: var(--md-sys-motion-duration-long);
+  animation-timing-function: var(--md-sys-motion-easing-emphasized);
+}
 #lb-loading {
   position: absolute;
   top: 50%;

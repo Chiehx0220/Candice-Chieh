@@ -24,7 +24,9 @@ module.exports = function () {
       title: data.title,
       category: data.category,
       imageUrl: data.imageUrl,
-      alt: data.alt,
+      // Not a CMS field — fall back to caption/title (both required)
+      // instead of asking for a separate hand-written alt text per photo.
+      alt: data.alt || data.caption || data.title,
       caption: data.caption,
       date,
       shortDate: formatShort(date),

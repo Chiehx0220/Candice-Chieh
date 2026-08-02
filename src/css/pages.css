@@ -132,6 +132,19 @@
 /* ---------------------------------------------------------------------- */
 .entry-back { margin-bottom: 12px; margin-left: -12px; }
 .entry-hero { border-radius: var(--md-sys-shape-corner-large); overflow: hidden; aspect-ratio: 16/7; margin-bottom: 24px; }
+/* Named to match the diary-list thumbnail this grows from — see
+   js/diary-transitions.js, which tags the clicked thumbnail with the
+   same name right before navigation. border-radius lives on the <img>
+   itself (not just the wrapper's overflow:hidden) so the rounded shape
+   is actually baked into the captured frame the browser morphs, the
+   same way .diary-list img[slot='start'] already carries its own
+   border-radius (see components.css) instead of relying on a clipping
+   ancestor. */
+.entry-hero img { border-radius: var(--md-sys-shape-corner-large); view-transition-name: diary-hero; }
+::view-transition-group(diary-hero) {
+  animation-duration: var(--md-sys-motion-duration-long);
+  animation-timing-function: var(--md-sys-motion-easing-emphasized);
+}
 .entry-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
 .entry-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
