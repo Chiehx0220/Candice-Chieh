@@ -12,6 +12,13 @@ const DIR = path.join(__dirname, "..", "..", "content", "gallery");
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT =
   "candice-chieh-site-build/1.0 (+https://github.com/Chiehx0220/Candice-Chieh)";
+// Soft regional bias, not a hard filter — same box as js/gallery-map.js's
+// TAIWAN_BOUNDS and src/admin/location-widget.js's TAIWAN_VIEWBOX, kept
+// in sync with the CMS's own suggestion dropdown so a name typed by hand
+// (bypassing the dropdown) resolves the same way the suggestion for it
+// would have. `bounded=0` keeps this a preference, not an exclusion, so
+// an overseas trip photo's location is still geocodable.
+const TAIWAN_VIEWBOX = "119.0,25.6,122.3,21.5";
 
 function formatShort(date) {
   return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
@@ -41,7 +48,7 @@ function parseCoordinates(str) {
 // or unreachable lookup just leaves that photo off the map instead of
 // failing the entire site build.
 async function geocode(place) {
-  const url = `${NOMINATIM_URL}?format=json&limit=1&q=${encodeURIComponent(place)}`;
+  const url = `${NOMINATIM_URL}?format=json&limit=1&viewbox=${TAIWAN_VIEWBOX}&bounded=0&q=${encodeURIComponent(place)}`;
 
   try {
     const res = await fetch(url, {

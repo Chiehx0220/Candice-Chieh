@@ -16,6 +16,15 @@
   var DEBOUNCE_MS = 400;
   var MIN_QUERY_LENGTH = 2;
   var NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+  // Soft regional bias, not a hard filter — most photos are expected to
+  // be somewhere in Taiwan (see the same box in js/gallery-map.js's
+  // TAIWAN_BOUNDS), so a short/ambiguous name like "東眼山" should rank
+  // its Taiwan match above an unrelated same-named place elsewhere
+  // (a real example: it was ranking a 福州市, 中國 result above the
+  // intended 桃園市 one). `bounded=0` keeps this a preference rather
+  // than excluding results outside the box entirely, so an overseas
+  // trip photo's location can still be found.
+  var TAIWAN_VIEWBOX = '119.0,25.6,122.3,21.5';
 
   // Nominatim's `display_name` is a full address ("清水寺, 1-294, ...,
   // 京都市, ..., Japan") — the part before the first comma is a much
@@ -46,7 +55,9 @@
     runSearch: function (query) {
       var requestId = (this._requestId = (this._requestId || 0) + 1);
       this.setState({ loading: true });
-      var url = NOMINATIM_URL + '?format=json&limit=5&accept-language=zh-TW&q=' + encodeURIComponent(query);
+      var url = NOMINATIM_URL +
+        '?format=json&limit=5&accept-language=zh-TW&viewbox=' + TAIWAN_VIEWBOX +
+        '&bounded=0&q=' + encodeURIComponent(query);
       fetch(url)
         .then(function (res) { return res.json(); })
         .then(function (results) {
