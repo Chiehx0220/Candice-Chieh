@@ -69,7 +69,7 @@ collections:
       - { label: "照片網址", name: "imageUrl", widget: "string", hint: "貼上 pCloud 直鏈網址" }
       - { label: "說明文字", name: "caption", widget: "string" }
       - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
-      - { label: "拍攝地點", name: "location", widget: "string", required: false, hint: "地名即可,例如「台北 101」或「京都 清水寺」，建置網站時會自動轉換成地圖座標。留空則這張照片不會出現在地圖上。" }
+      - { label: "拍攝地點", name: "location", widget: "string", required: false, hint: "地名即可,例如「台北 101」或「京都 清水寺」，建置網站時會自動轉換成地圖座標；也可以直接貼「緯度, 經度」（例如 24.98, 121.54），會直接使用不用轉換，地名不好找時比較準。留空則這張照片不會出現在地圖上。" }
 
   - name: "about"
     label: "關於我們"

@@ -21,6 +21,21 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Lets the same "拍攝地點" field take a raw "lat, lng" pair (e.g. from
+// long-pressing a spot in Google Maps and copying its coordinates)
+// instead of a place name — useful when a name is ambiguous or too
+// obscure for Nominatim to find. Returns null for anything that isn't
+// exactly two comma-separated numbers in valid lat/lng range, so a real
+// place name always falls through to geocode() below untouched.
+function parseCoordinates(str) {
+  const match = /^\s*(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/.exec(str);
+  if (!match) return null;
+  const lat = Number(match[1]);
+  const lng = Number(match[2]);
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+  return { lat, lng };
+}
+
 // Turns a free-text place name (e.g. "京都 清水寺") into {lat, lng}. Returns
 // null — never throws — on no match or a network/API failure, so one bad
 // or unreachable lookup just leaves that photo off the map instead of
@@ -76,8 +91,16 @@ async function buildGalleryData() {
   for (const item of items) {
     if (!item.location) continue;
     if (!cache.has(item.location)) {
-      cache.set(item.location, await geocode(item.location));
-      await sleep(1000);
+      // A raw "lat, lng" pair skips geocoding entirely — no network
+      // call, no rate-limit delay, and no dependency on Nominatim being
+      // able to find that exact spot.
+      const direct = parseCoordinates(item.location);
+      if (direct) {
+        cache.set(item.location, direct);
+      } else {
+        cache.set(item.location, await geocode(item.location));
+        await sleep(1000);
+      }
     }
     const coords = cache.get(item.location);
     if (coords) {
