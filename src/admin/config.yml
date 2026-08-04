@@ -91,6 +91,7 @@ collections:
           - label: "時間軸"
             name: "timeline"
             widget: "list"
+            hint: "不用拖曳調整順序，網站會自動依日期排序（由舊到新），「現在進行式」永遠排最後。"
             fields:
               - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true, required: false, hint: "「持續更新中」特例可以留空，畫面上會自動顯示「現在進行式」" }
               - { label: "標題", name: "title", widget: "string" }
