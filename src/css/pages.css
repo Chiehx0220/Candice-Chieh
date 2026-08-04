@@ -230,6 +230,15 @@
   color: var(--md-sys-color-on-surface);
 }
 
+/* Hides the zoom +/- buttons and the OpenStreetMap/CARTO attribution
+   text — see the chat where this was requested for why the attribution
+   piece specifically is worth double-checking against OSM/CARTO's usage
+   terms before shipping. */
+.gallery-map .leaflet-control-attribution,
+.gallery-map .leaflet-control {
+  display: none;
+}
+
 /* A clickable <a> now (opens the same lightbox the grid uses — see
    gallery-map.js), not just a static caption card. */
 .gallery-map__popup { display: block; width: 180px; }
