@@ -23,11 +23,17 @@ module.exports = function () {
           dateDisplay: isNaN(parsed.getTime()) ? String(item.date) : formatLong(parsed),
         };
       })
-      // "現在進行式" always leads the timeline, whatever position it's
-      // dragged to in the CMS's list widget — Array#sort is stable
-      // (guaranteed since Node 12+), so everything else just keeps
-      // whatever relative order was set there.
-      .sort((a, b) => (b.ongoing === true) - (a.ongoing === true));
+      // 日期升冪排序 — 沒有日期的「現在進行式」（見 config.yml）視為無限
+      // 大，自然排在最後面；日期格式壞掉時也一併當成最後，不會讓整個排序
+      // 出錯。
+      .sort((a, b) => {
+        const time = (item) => {
+          if (!item.date) return Infinity;
+          const t = new Date(item.date).getTime();
+          return isNaN(t) ? Infinity : t;
+        };
+        return time(a) - time(b);
+      });
   }
 
   return data;
