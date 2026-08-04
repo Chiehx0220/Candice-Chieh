@@ -16,3 +16,7 @@ timeline:
   - title: 持續更新中…
     body: 繼續一起開屁眼派對!!!!
     ongoing: true
+  - ongoing: false
+    date: 2021-09-20
+    title: 第一次聊天！！
+    body: 老蕭突然來回覆我的限時動態框框，還有回覆我的限動！我們就開始聊天啦！
