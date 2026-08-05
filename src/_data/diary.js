@@ -49,19 +49,11 @@ module.exports = function () {
       // to stand in for thumbnail/hero alt text.
       imageAlt: data.imageAlt || data.title,
       excerpt: data.excerpt,
-      // Freely-ordered text/image blocks (see admin/config.yml's
-      // `content` list-with-types field) — each is either a markdown
-      // paragraph or a photo, in whatever order they were dragged to.
-      content: (data.content || []).map((block, i) => {
-        if (block.type === "image") {
-          return {
-            type: "image",
-            url: block.url,
-            alt: block.alt || `${data.title || "日記照片"} 照片 ${i + 1}`,
-          };
-        }
-        return { type: "text", html: md.render(block.body || "") };
-      }),
+      // Single free-form markdown field (see admin/config.yml's `body`
+      // field) — the CMS's markdown widget already has its own image
+      // upload button, so a separate list-of-typed-blocks structure was
+      // just extra ceremony for the same result.
+      bodyHtml: md.render(data.body || ""),
     };
   });
 

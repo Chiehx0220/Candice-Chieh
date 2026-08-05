@@ -40,21 +40,7 @@ collections:
           - { label: "美食", value: "food" }
       - { label: "封面圖片網址（列表縮圖與文章頂部大圖共用）", name: "heroImage", widget: "string", hint: "貼上 pCloud 直鏈網址" }
       - { label: "列表摘要（首頁與日記列表共用）", name: "excerpt", widget: "text" }
-      - label: "內文（自由新增文字段落或圖片，可拖曳調整順序）"
-        name: "content"
-        widget: "list"
-        types:
-          - label: "文字段落"
-            name: "text"
-            widget: "object"
-            fields:
-              - { label: "內文", name: "body", widget: "markdown" }
-          - label: "圖片"
-            name: "image"
-            widget: "object"
-            fields:
-              - { label: "圖片網址", name: "url", widget: "string", hint: "貼上 pCloud 直鏈網址" }
-              - { label: "說明文字（給視障輔助工具用，可留空）", name: "alt", widget: "string", required: false }
+      - { label: "內文（可直接在文字中插入圖片，工具列上有插入圖片按鈕）", name: "body", widget: "markdown" }
 
   - name: "gallery"
     label: "相簿"

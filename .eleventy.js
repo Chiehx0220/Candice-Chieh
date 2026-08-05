@@ -48,6 +48,19 @@ module.exports = function (eleventyConfig) {
       });
   });
 
+  // Decap's markdown widget lets writers drop in a locally-uploaded photo
+  // (saved under media_folder/public_folder, e.g. "/images/xxx.jpg"), and
+  // that raw path gets baked straight into the rendered <img src> at data-
+  // load time in diary.js — same pathprefix blind spot as geoPhotos above,
+  // except here it's inside an HTML string rather than a template `| url`
+  // call, so it needs its own filter pass instead.
+  eleventyConfig.addFilter("fixLocalImages", function (html) {
+    const urlFilter = eleventyConfig.getFilter("url");
+    return (html || "").replace(/src="(\/images\/[^"]+)"/g, function (match, src) {
+      return 'src="' + urlFilter(src) + '"';
+    });
+  });
+
   return {
     dir: {
       input: "src",

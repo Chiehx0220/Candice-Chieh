@@ -139,18 +139,16 @@
 .entry-article p { margin-bottom: 18px; }
 .entry-article p:last-child { margin-bottom: 0; }
 
-/* Freely-ordered text/image blocks (see entry.content in diary.js) —
-   replaces the old fixed bodyBefore/photos-row/body structure, so a
-   photo can land anywhere in the flow instead of only in one fixed
-   two-up row. Natural aspect ratio (not the old forced 4/3 cover crop)
-   since these can now be anything the writer drops in. */
-.entry-block-text { margin-bottom: 18px; }
-.entry-block-image {
+/* Free-form markdown body (see entry.bodyHtml in diary.js) — photos are
+   just inline <img> tags wherever the writer dropped them via the
+   markdown widget's upload button, so they need their own MD3 rounding
+   since a plain markdown-rendered <img> otherwise comes out square.
+   Natural aspect ratio (no forced crop) since these can be anything. */
+.entry-body img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: var(--md-sys-shape-corner-medium);
-  margin-bottom: 18px;
+  border-radius: var(--md-sys-shape-corner-large);
 }
 
 .entry-nav {
