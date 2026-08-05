@@ -20,7 +20,11 @@ module.exports = function () {
   const entries = files.map((file) => {
     const slug = file.replace(/\.md$/, "");
     const raw = fs.readFileSync(path.join(DIR, file), "utf8");
-    const { data } = matter(raw);
+    // A field named "body" is special-cased by Decap CMS: it isn't saved
+    // as a front-matter key but as the file's actual markdown body (the
+    // part after the closing "---"), which is gray-matter's `content`,
+    // not `data.body`.
+    const { data, content } = matter(raw);
     // Defends against entries saved without a date (e.g. from before the
     // CMS's date widget was fixed) — an Invalid Date would otherwise sort
     // unpredictably and render as "NaN 年 NaN 月". Falls back to "now"
@@ -53,7 +57,7 @@ module.exports = function () {
       // field) — the CMS's markdown widget already has its own image
       // upload button, so a separate list-of-typed-blocks structure was
       // just extra ceremony for the same result.
-      bodyHtml: md.render(data.body || ""),
+      bodyHtml: md.render(content || ""),
     };
   });
 
