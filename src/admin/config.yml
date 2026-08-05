@@ -74,8 +74,8 @@ collections:
         label: "關於我們頁面"
         file: "content/about.yml"
         fields:
-          - { label: "阿蕭頭像網址", name: "avatarA", widget: "string" }
-          - { label: "老郭頭像網址", name: "avatarB", widget: "string" }
+          - { label: "老蕭頭像網址", name: "avatarA", widget: "string" }
+          - { label: "心寶頭像網址", name: "avatarB", widget: "string" }
           - { label: "簡介文字", name: "intro", widget: "text" }
           - label: "個人介紹卡片"
             name: "profiles"

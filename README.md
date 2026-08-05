@@ -1,4 +1,4 @@
-# 阿蕭跟老郭的生活記錄
+# 老蕭跟心寶的生活記錄
 
 情侶日常與相片紀錄網站。用 [Eleventy](https://www.11ty.dev/) 把內容（日記、相簿、關於我們）組成靜態頁面,部署在 GitHub Pages;內容透過 [Decap CMS](https://decapcms.org/) 網頁後台編輯,存檔會直接 commit 進這個 repo 並自動重新部署。UI 元件使用 Google 官方的 [`@material/web`](https://github.com/material-components/material-web) custom element 套件(透過 CDN 載入),配色採用粉紅色系(seed hue 340),支援淺色 / 深色主題切換。
 

@@ -89,7 +89,7 @@
       '<a class="top-app-bar__brand" href="' + ROOT + 'index.html">' +
         '<md-ripple></md-ripple>' +
         HEART_ICON.replace('<svg ', '<svg width="24" height="24" ') +
-        '<span class="md-title-medium">阿蕭跟老郭的生活記錄</span>' +
+        '<span class="md-title-medium">老蕭跟心寶的生活記錄</span>' +
       '</a>' +
       '<div class="top-app-bar__actions">' +
         '<md-icon-button toggle id="theme-toggle" aria-label="切換深色/淺色主題">' +
@@ -115,14 +115,14 @@
     '<nav class="nav-drawer" aria-label="主要導覽">' +
       '<div class="nav-drawer__header md-title-small">' +
         HEART_ICON.replace('<svg ', '<svg width="20" height="20" ') +
-        '<span>阿蕭跟老郭</span>' +
+        '<span>老蕭跟心寶</span>' +
       '</div>' +
       navLinks('nav-drawer__item', null, true) +
     '</nav>';
 
   var footerHtml =
     '<footer class="site-footer">' +
-      '<p class="md-body-medium">© <span id="footer-year"></span> 阿蕭跟老郭的生活記錄 — 一起走過的每一天' +
+      '<p class="md-body-medium">© <span id="footer-year"></span> 老蕭跟心寶的生活記錄 — 一起走過的每一天' +
         '<span class="heart">' + HEART_ICON.replace('<svg ', '<svg width="16" height="16" ') + '</span>' +
       '</p>' +
     '</footer>' +
