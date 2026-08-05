@@ -42,7 +42,7 @@ collections:
           - { label: "紀念日", value: "anniversary" }
           - { label: "出遊", value: "trip" }
           - { label: "美食", value: "food" }
-      - { label: "封面圖片網址（列表縮圖與文章頂部大圖共用）", name: "heroImage", widget: "string", hint: "貼上 pCloud 直鏈網址" }
+      - { label: "封面圖片（列表縮圖與文章頂部大圖共用）", name: "heroImage", widget: "image", hint: "可以直接上傳照片，或選擇已有的照片，也可以貼上圖床網址" }
       - { label: "列表摘要（首頁與日記列表共用）", name: "excerpt", widget: "text" }
       - { label: "內文（可直接在文字中插入圖片，工具列上有插入圖片按鈕）", name: "body", widget: "markdown" }
 
@@ -62,7 +62,7 @@ collections:
           - { label: "旅行", value: "trip" }
           - { label: "紀念日", value: "anniversary" }
           - { label: "美食", value: "food" }
-      - { label: "照片網址", name: "imageUrl", widget: "string", hint: "貼上 pCloud 直鏈網址" }
+      - { label: "照片", name: "imageUrl", widget: "image", hint: "可以直接上傳照片，或選擇已有的照片，也可以貼上圖床網址" }
       - { label: "說明文字", name: "caption", widget: "string" }
       - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
       - { label: "拍攝地點", name: "location", widget: "location", required: false, hint: "輸入地名時下面會出現建議清單可以直接點選；也可以自己打地名（建置網站時會自動轉換成地圖座標），或直接貼「緯度, 經度」（例如 24.98, 121.54）會直接使用不用轉換。留空則這張照片不會出現在地圖上。" }

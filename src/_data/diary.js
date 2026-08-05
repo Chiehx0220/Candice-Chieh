@@ -14,6 +14,29 @@ function formatLong(date) {
   return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月 ${date.getDate()} 日`;
 }
 
+function escapeAttr(str) {
+  return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+}
+
+// The CMS's rich-text image inserter always shows ALT TEXT/TITLE inputs,
+// but nobody wants to hand-fill those per photo — leaving them blank is
+// the expected path, not an error case. Fill in a numbered fallback for
+// alt (screen readers still need *something*) and drop title entirely
+// when left empty (an empty title="" just shows a blank tooltip).
+function fillImageFallbacks(html, entryTitle) {
+  let count = 0;
+  return html.replace(/<img\b([^>]*?)>/g, (match, attrs) => {
+    count += 1;
+    let out = attrs;
+    if (/\salt=""/.test(out)) {
+      const fallback = escapeAttr(`${entryTitle || "日記照片"} 照片 ${count}`);
+      out = out.replace(/\salt=""/, ` alt="${fallback}"`);
+    }
+    out = out.replace(/\stitle=""/, "");
+    return `<img${out}>`;
+  });
+}
+
 module.exports = function () {
   const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".md"));
 
@@ -57,7 +80,7 @@ module.exports = function () {
       // field) — the CMS's markdown widget already has its own image
       // upload button, so a separate list-of-typed-blocks structure was
       // just extra ceremony for the same result.
-      bodyHtml: md.render(content || ""),
+      bodyHtml: fillImageFallbacks(md.render(content || ""), data.title),
     };
   });
 
