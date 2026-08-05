@@ -5,5 +5,5 @@ imageUrl: /images/gallery-06.svg
 alt: 紀念日示意照片 02
 caption: 謝謝一直在身邊
 date: 2026-07-27
-location: N22.62349° E120.28371°
+location: 鹽埕區
 ---
