@@ -20,7 +20,7 @@ module.exports = function () {
   const entries = files.map((file) => {
     const slug = file.replace(/\.md$/, "");
     const raw = fs.readFileSync(path.join(DIR, file), "utf8");
-    const { data, content } = matter(raw);
+    const { data } = matter(raw);
     // Defends against entries saved without a date (e.g. from before the
     // CMS's date widget was fixed) — an Invalid Date would otherwise sort
     // unpredictably and render as "NaN 年 NaN 月". Falls back to "now"
@@ -40,21 +40,28 @@ module.exports = function () {
       shortDate: formatShort(date),
       longDate: formatLong(date),
       category: data.category,
-      thumbnail: data.thumbnail,
+      // One field for both the list thumbnail and the entry page's own
+      // hero image — no more filling in the same picture twice.
+      thumbnail: data.heroImage,
       heroImage: data.heroImage,
       // Not a CMS field — nobody wants to hand-write alt text per entry.
       // The title is always required and describes the entry well enough
       // to stand in for thumbnail/hero alt text.
       imageAlt: data.imageAlt || data.title,
       excerpt: data.excerpt,
-      // Same reasoning for inline photos: no per-photo alt field in the
-      // CMS, so derive one from the entry title + position.
-      photos: (data.photos || []).map((photo, i) => ({
-        ...photo,
-        alt: photo.alt || `${data.title || "日記照片"} 照片 ${i + 1}`,
-      })),
-      bodyBeforeHtml: md.render(data.bodyBefore || ""),
-      bodyAfterHtml: md.render(content || ""),
+      // Freely-ordered text/image blocks (see admin/config.yml's
+      // `content` list-with-types field) — each is either a markdown
+      // paragraph or a photo, in whatever order they were dragged to.
+      content: (data.content || []).map((block, i) => {
+        if (block.type === "image") {
+          return {
+            type: "image",
+            url: block.url,
+            alt: block.alt || `${data.title || "日記照片"} 照片 ${i + 1}`,
+          };
+        }
+        return { type: "text", html: md.render(block.body || "") };
+      }),
     };
   });
 

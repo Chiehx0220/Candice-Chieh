@@ -139,14 +139,19 @@
 .entry-article p { margin-bottom: 18px; }
 .entry-article p:last-child { margin-bottom: 0; }
 
-.entry-photo-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin: 28px 0;
+/* Freely-ordered text/image blocks (see entry.content in diary.js) —
+   replaces the old fixed bodyBefore/photos-row/body structure, so a
+   photo can land anywhere in the flow instead of only in one fixed
+   two-up row. Natural aspect ratio (not the old forced 4/3 cover crop)
+   since these can now be anything the writer drops in. */
+.entry-block-text { margin-bottom: 18px; }
+.entry-block-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--md-sys-shape-corner-medium);
+  margin-bottom: 18px;
 }
-.entry-photo-row img { border-radius: var(--md-sys-shape-corner-medium); aspect-ratio: 4/3; object-fit: cover; width: 100%; }
-@media (max-width: 599px) { .entry-photo-row { grid-template-columns: 1fr; } }
 
 .entry-nav {
   display: flex;

@@ -33,17 +33,13 @@ pageKey: diary
     <h1 class="md-headline-large is-emphasized">{{ entry.title }}</h1>
   </header>
 
-  {{ entry.bodyBeforeHtml | safe }}
-
-  {% if entry.photos.length %}
-  <div class="entry-photo-row">
-    {% for photo in entry.photos %}
-    <img src="{{ photo.url | url }}" alt="{{ photo.alt }}">
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  {{ entry.bodyAfterHtml | safe }}
+  {% for block in entry.content %}
+    {% if block.type == "image" %}
+    <img class="entry-block-image" src="{{ block.url | url }}" alt="{{ block.alt }}">
+    {% else %}
+    <div class="entry-block-text">{{ block.html | safe }}</div>
+    {% endif %}
+  {% endfor %}
 </article>
 
 {% set prevEntry = diary[pagination.pageNumber + 1] %}
