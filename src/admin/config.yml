@@ -13,12 +13,16 @@ backend:
 publish_mode: simple
 locale: "zh_Hant"
 
-# Required by Decap's config schema even though no collection here uses an
-# "image"/"file" upload widget — all photo fields are plain text URLs
-# (pCloud direct links), so nothing actually gets written here. Points at
-# the site's existing local static-asset folder just so the path is real.
+# Backs the diary body field's inline image-upload button. public_folder
+# has to be the *fully-qualified* deployed URL, not a site-relative path —
+# this is a GitHub Pages project page (served under /Candice-Chieh/, not
+# domain root), and the CMS editor's own image-preview pane resolves a
+# relative public_folder against the domain root, not the pathprefix, so
+# a bare "/images" 404s inside the editor even though the live page (which
+# goes through .eleventy.js's fixLocalImages filter) renders it fine.
+# A full URL sidesteps that mismatch entirely and needs no filter.
 media_folder: "src/images"
-public_folder: "/images"
+public_folder: "https://chiehx0220.github.io/Candice-Chieh/images"
 
 collections:
   - name: "diary"
