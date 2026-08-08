@@ -26,6 +26,7 @@
     var loadingEl = document.getElementById('lb-loading');
     var titleEl = document.getElementById('lb-title');
     var dateEl = document.getElementById('lb-date');
+    var locationEl = document.getElementById('lb-location');
     var captionEl = document.getElementById('lb-caption');
     var closeBtn = document.getElementById('lb-close');
     var prevBtn = document.getElementById('lb-prev');
@@ -67,6 +68,11 @@
       imgEl.alt = img.alt;
       titleEl.textContent = fig.dataset.title || '';
       if (dateEl) dateEl.textContent = fig.dataset.date || '';
+      if (locationEl) {
+        var location = fig.dataset.location || '';
+        locationEl.textContent = location ? ('📍 ' + location) : '';
+        locationEl.classList.toggle('is-hidden', !location);
+      }
       captionEl.textContent = fig.dataset.caption || '';
       dialog.show();
     }
