@@ -25,8 +25,8 @@
     var imgEl = document.getElementById('lb-img');
     var loadingEl = document.getElementById('lb-loading');
     var titleEl = document.getElementById('lb-title');
-    var dateEl = document.getElementById('lb-date');
-    var locationEl = document.getElementById('lb-location');
+    var dateTextEl = document.getElementById('lb-date-text');
+    var locationBtn = document.getElementById('lb-location-btn');
     var captionEl = document.getElementById('lb-caption');
     var closeBtn = document.getElementById('lb-close');
     var prevBtn = document.getElementById('lb-prev');
@@ -67,11 +67,26 @@
       imgEl.src = img.src;
       imgEl.alt = img.alt;
       titleEl.textContent = fig.dataset.title || '';
-      if (dateEl) dateEl.textContent = fig.dataset.date || '';
-      if (locationEl) {
+      if (dateTextEl) dateTextEl.textContent = fig.dataset.date || '';
+      // The 📍 location is only a clickable jump-to-map button when this
+      // photo actually has build-time-geocoded coordinates (see
+      // src/_data/gallery.js — a location that failed to geocode has no
+      // lat/lng, and gallery-map.js has no marker to jump to for it), so
+      // its lat/lng gets carried on the button's own dataset rather than
+      // looked up again later from `figures`.
+      if (locationBtn) {
         var location = fig.dataset.location || '';
-        locationEl.textContent = location ? ('📍 ' + location) : '';
-        locationEl.classList.toggle('is-hidden', !location);
+        locationBtn.textContent = location ? (' 📍' + location) : '';
+        locationBtn.classList.toggle('is-hidden', !location);
+        if (fig.dataset.lat && fig.dataset.lng) {
+          locationBtn.dataset.lat = fig.dataset.lat;
+          locationBtn.dataset.lng = fig.dataset.lng;
+          locationBtn.classList.remove('is-static');
+        } else {
+          delete locationBtn.dataset.lat;
+          delete locationBtn.dataset.lng;
+          locationBtn.classList.add('is-static');
+        }
       }
       captionEl.textContent = fig.dataset.caption || '';
       dialog.show();
@@ -117,6 +132,23 @@
       if (closeBtn) closeBtn.addEventListener('click', function () { dialog.close(); });
       if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
       if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
+      // Jump from the lightbox straight to this photo's marker on the
+      // map. gallery.js and gallery-map.js don't know about each other
+      // directly, so this hands off via a custom event instead of a
+      // direct function call — gallery-map.js listens for it and does
+      // the actual view-switch + pan + popup-open.
+      if (locationBtn) {
+        locationBtn.addEventListener('click', function () {
+          if (!locationBtn.dataset.lat || !locationBtn.dataset.lng) return;
+          dialog.close();
+          document.dispatchEvent(new CustomEvent('gallery:focus-location', {
+            detail: {
+              lat: Number(locationBtn.dataset.lat),
+              lng: Number(locationBtn.dataset.lng),
+            },
+          }));
+        });
+      }
       document.addEventListener('keydown', function (e) {
         if (!dialog.open) return;
         if (e.key === 'ArrowLeft') step(-1);

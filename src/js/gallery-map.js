@@ -232,6 +232,24 @@
       if (map) setTimeout(function () { map.invalidateSize(); }, 0);
     }
 
+    // Finds the marker at (lat, lng) by exact coordinate match — every
+    // marker's own position and this value both trace back to the same
+    // build-time geocode() result (see src/_data/gallery.js), so this is
+    // reliable without needing to also track slugs per marker. Grouped
+    // markers (see groupByLocation() above) resolve correctly too: any
+    // photo sharing that spot lands on the one shared marker, which is
+    // the right target either way.
+    function focusMarker(lat, lng) {
+      if (!map) return;
+      var marker = markers.filter(function (m) { return map.hasLayer(m); }).find(function (m) {
+        var ll = m.getLatLng();
+        return Math.abs(ll.lat - lat) < 1e-6 && Math.abs(ll.lng - lng) < 1e-6;
+      });
+      if (!marker) return;
+      map.setView([lat, lng], Math.max(map.getZoom(), 14));
+      marker.openPopup();
+    }
+
     gridChip.addEventListener('click', function () {
       mapChip.selected = false;
       gridChip.selected = true;
@@ -241,6 +259,19 @@
       gridChip.selected = false;
       mapChip.selected = true;
       showMap();
+    });
+
+    // Jump here from the lightbox's 📍 location button (see gallery.js).
+    // showMap()'s own invalidateSize() nudge is deferred a tick for the
+    // same display:none-mid-toggle reason noted there; this waits a bit
+    // longer still so the map is already correctly sized before setView()
+    // runs, not just initialized.
+    document.addEventListener('gallery:focus-location', function (e) {
+      var detail = e.detail || {};
+      gridChip.selected = false;
+      mapChip.selected = true;
+      showMap();
+      setTimeout(function () { focusMarker(detail.lat, detail.lng); }, 50);
     });
 
     // Delegated (not bound per-marker) because Leaflet tears down and

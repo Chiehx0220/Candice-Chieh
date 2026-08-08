@@ -32,7 +32,7 @@ permalink: gallery.html
 
 <div id="gallery-grid-view" class="gallery-grid" data-gallery-scope>
   {% for photo in gallery %}
-  <figure data-gallery-item data-slug="{{ photo.slug }}" data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}" data-location="{{ photo.location }}">
+  <figure data-gallery-item data-slug="{{ photo.slug }}" data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}" data-location="{{ photo.location }}"{% if photo.lat %} data-lat="{{ photo.lat }}" data-lng="{{ photo.lng }}"{% endif %}>
     <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
     <span class="photo-date md-label-small">{{ photo.shortDate }}</span>
   </figure>
@@ -55,8 +55,7 @@ permalink: gallery.html
       <md-circular-progress id="lb-loading" class="is-hidden" indeterminate></md-circular-progress>
       <img id="lb-img" src="" alt="">
     </div>
-    <p class="md-label-medium md-on-surface-variant" id="lb-date" style="margin-bottom:4px"></p>
-    <p class="md-label-medium md-on-surface-variant is-hidden" id="lb-location" style="margin-bottom:4px"></p>
+    <p class="md-label-medium md-on-surface-variant" id="lb-date" style="margin-bottom:4px"><span id="lb-date-text"></span><button type="button" class="lb-location-btn is-hidden" id="lb-location-btn"></button></p>
     <p class="md-body-medium md-on-surface-variant" id="lb-caption"></p>
   </div>
   <div slot="actions" class="lightbox__controls">

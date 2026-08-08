@@ -43,12 +43,15 @@ function parseCoordinates(str) {
   return { lat, lng };
 }
 
-// Turns a free-text place name (e.g. "京都 清水寺") into {lat, lng}. Returns
-// null — never throws — on no match or a network/API failure, so one bad
-// or unreachable lookup just leaves that photo off the map instead of
-// failing the entire site build.
+// Turns a free-text place name (e.g. "京都 清水寺") into {lat, lng, region}.
+// `region` is the containing city/county from Nominatim's address
+// breakdown (addressdetails=1) — e.g. "鹽埕區" → "高雄市", "墾丁" →
+// "屏東縣" — so a place name typed without one can still show one level
+// up for context. Returns null — never throws — on no match or a
+// network/API failure, so one bad or unreachable lookup just leaves that
+// photo off the map instead of failing the entire site build.
 async function geocode(place) {
-  const url = `${NOMINATIM_URL}?format=json&limit=1&viewbox=${TAIWAN_VIEWBOX}&bounded=0&q=${encodeURIComponent(place)}`;
+  const url = `${NOMINATIM_URL}?format=json&limit=1&addressdetails=1&viewbox=${TAIWAN_VIEWBOX}&bounded=0&q=${encodeURIComponent(place)}`;
 
   try {
     const res = await fetch(url, {
@@ -57,7 +60,12 @@ async function geocode(place) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const results = await res.json();
     if (!results.length) return null;
-    return { lat: Number(results[0].lat), lng: Number(results[0].lon) };
+    const address = results[0].address || {};
+    return {
+      lat: Number(results[0].lat),
+      lng: Number(results[0].lon),
+      region: address.city || address.county || address.state || "",
+    };
   } catch (err) {
     console.warn(`[gallery] geocoding failed for "${place}": ${err.message}`);
     return null;
@@ -113,6 +121,14 @@ async function buildGalleryData() {
     if (coords) {
       item.lat = coords.lat;
       item.lng = coords.lng;
+      // Prepend the containing city/county so a bare district or landmark
+      // name (e.g. "鹽埕區", "墾丁") reads with one more level of context
+      // ("高雄市 鹽埕區") — skipped when the CMS location text already
+      // names it, or when it came from a raw "lat, lng" pair (no address
+      // breakdown to draw from).
+      if (coords.region && !item.location.includes(coords.region)) {
+        item.location = `${coords.region} ${item.location}`;
+      }
     }
   }
 

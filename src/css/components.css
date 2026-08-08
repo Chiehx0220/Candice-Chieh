@@ -448,6 +448,34 @@ md-dialog.lightbox {
 #lb-loading.is-hidden { opacity: 0; }
 .lightbox__controls { display: flex; justify-content: space-between; align-items: center; }
 
+/* The 📍 location, appended after #lb-date-text inside #lb-date (see
+   gallery.njk) — a real <button>, reset to look like inline text, that
+   jumps to this photo's marker on the map (see gallery.js/gallery-map.js).
+   .is-static is used instead of just omitting the listener when a photo's
+   location never got build-time coordinates (geocoding can fail) — same
+   text, but no pointer cursor or hover/focus affordance, since there's no
+   marker to jump to. */
+.lb-location-btn {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.lb-location-btn:hover,
+.lb-location-btn:focus-visible {
+  text-decoration: underline;
+}
+.lb-location-btn.is-static {
+  cursor: default;
+}
+.lb-location-btn.is-static:hover,
+.lb-location-btn.is-static:focus-visible {
+  text-decoration: none;
+}
+
 /* ---------------------------------------------------------------------- */
 /* Back-to-top FAB — real <md-fab>, this only supplies the floating       */
 /* position (the FAB itself has no opinion on where it sits on a page).   */
