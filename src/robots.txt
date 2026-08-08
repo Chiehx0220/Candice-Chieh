@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chiehx0220.github.io/Candice-Chieh/sitemap.xml

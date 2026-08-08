@@ -23,7 +23,7 @@ permalink: diary.html
 <md-list class="diary-list elevation-surface is-flat reveal" id="diary-list">
   {% for entry in diary %}
   <md-list-item type="link" data-diary-category="{{ entry.category }}" href="{{ ('/diary/' + entry.slug + '.html') | url }}">
-    <img slot="start" src="{{ entry.thumbnail | url }}" alt="{{ entry.imageAlt }}">
+    <img slot="start" src="{{ entry.thumbnail | url }}" alt="{{ entry.imageAlt }}" loading="lazy" decoding="async">
     <div slot="overline">{{ categories.diary[entry.category] }} · {{ entry.shortDate }}</div>
     <div slot="headline">{{ entry.title }}</div>
     <div slot="supporting-text">{{ entry.excerpt }}</div>

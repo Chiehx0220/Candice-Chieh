@@ -33,7 +33,7 @@ permalink: gallery.html
 <div id="gallery-grid-view" class="gallery-grid" data-gallery-scope>
   {% for photo in gallery %}
   <figure data-gallery-item data-slug="{{ photo.slug }}" data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}" data-location="{{ photo.location }}"{% if photo.lat %} data-lat="{{ photo.lat }}" data-lng="{{ photo.lng }}"{% endif %}>
-    <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
+    <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
     <span class="photo-date md-label-small">{{ photo.shortDate }}</span>
   </figure>
   {% endfor %}

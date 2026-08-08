@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ title }}</title>
 <meta name="description" content="{{ description }}">
+{% set canonicalUrl = site.origin + (page.url | url) %}
+{% set ogImageUrl = site.origin + ('/images/apple-touch-icon.png' | url) %}
+<link rel="canonical" href="{{ canonicalUrl }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="老蕭跟心寶的生活記錄">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ description }}">
+<meta property="og:url" content="{{ canonicalUrl }}">
+<meta property="og:image" content="{{ ogImageUrl }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ title }}">
+<meta name="twitter:description" content="{{ description }}">
+<meta name="twitter:image" content="{{ ogImageUrl }}">
 <link rel="icon" href="{{ '/images/favicon.svg' | url }}" type="image/svg+xml">
 <!-- Lets "加入主畫面" produce a proper home-screen icon and launch in
      standalone mode instead of a Safari-chrome window. -->

@@ -20,7 +20,7 @@ permalink: about.html
   {% for p in about.profiles %}
   <div class="profile-card elevation-surface reveal" style="transition-delay: {{ loop.index0 * 80 }}ms">
     <md-elevation></md-elevation>
-    <img src="{{ p.avatar | url }}" alt="{{ p.name }}的示意頭像">
+    <img src="{{ p.avatar | url }}" alt="{{ p.name }}的示意頭像" loading="lazy" decoding="async">
     <h2 class="md-title-large">{{ p.name }}</h2>
     <p class="md-body-medium md-on-surface-variant">{{ p.bio }}</p>
   </div>

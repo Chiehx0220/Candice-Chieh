@@ -28,7 +28,7 @@ pageKey: home
       <div class="memory-photos">
         {% for photo in group.photos %}
         <figure class="memory-photo" data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
-          <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
+          <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
           {% if photo.caption %}<span class="memory-photo__caption md-body-small">{{ photo.caption }}</span>{% endif %}
         </figure>
         {% endfor %}
@@ -56,7 +56,7 @@ pageKey: home
   <md-list class="diary-list elevation-surface is-flat">
     {% for entry in diary | limit(3) %}
     <md-list-item type="link" href="{{ ('/diary/' + entry.slug + '.html') | url }}">
-      <img slot="start" src="{{ entry.thumbnail | url }}" alt="{{ entry.imageAlt }}">
+      <img slot="start" src="{{ entry.thumbnail | url }}" alt="{{ entry.imageAlt }}" loading="lazy" decoding="async">
       <div slot="overline">{{ categories.diary[entry.category] }} · {{ entry.shortDate }}</div>
       <div slot="headline">{{ entry.title }}</div>
       <div slot="supporting-text">{{ entry.excerpt }}</div>
@@ -74,7 +74,7 @@ pageKey: home
   <div class="preview-photo-grid" data-gallery-scope>
     {% for photo in gallery | limit(6) %}
     <figure data-gallery-item data-category="{{ photo.category }}" data-title="{{ photo.title }}" data-caption="{{ photo.caption }}" data-date="{{ photo.shortDate }}">
-      <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}">
+      <img src="{{ photo.imageUrl | url }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
       <span class="photo-date md-label-small">{{ photo.shortDate }}</span>
     </figure>
     {% endfor %}
