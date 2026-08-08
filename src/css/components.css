@@ -447,6 +447,11 @@ md-dialog.lightbox {
 }
 #lb-loading.is-hidden { opacity: 0; }
 .lightbox__controls { display: flex; justify-content: space-between; align-items: center; }
+/* 玩拼圖 lives in the headline row instead of the actions row, so 上一張 /
+   關閉 / 下一張 stay exactly as they were — the three-way space-between
+   symmetry with 關閉 dead center is untouched by adding the puzzle
+   action. */
+.lightbox__headline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
 /* The 📍 location, appended after #lb-date-text inside #lb-date (see
    gallery.njk) — a real <button>, reset to look like inline text, that

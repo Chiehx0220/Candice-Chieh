@@ -49,7 +49,12 @@ permalink: gallery.html
 {% endblock %}
 {% block afterFooter %}
 <md-dialog class="lightbox" id="lightbox">
-  <div slot="headline" id="lb-title"></div>
+  <div slot="headline" class="lightbox__headline">
+    <span id="lb-title"></span>
+    <md-icon-button id="lb-puzzle" aria-label="玩拼圖">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/></svg>
+    </md-icon-button>
+  </div>
   <div slot="content">
     <div class="lightbox__image-wrap">
       <md-circular-progress id="lb-loading" class="is-hidden" indeterminate></md-circular-progress>
@@ -68,10 +73,32 @@ permalink: gallery.html
     </md-icon-button>
   </div>
 </md-dialog>
+
+<md-dialog class="lightbox" id="puzzle-dialog">
+  <div slot="headline" id="puzzle-title"></div>
+  <div slot="content">
+    <md-chip-set id="puzzle-difficulty" role="group" aria-label="拼圖難度" style="margin-bottom:12px">
+      <md-filter-chip label="3×3" data-size="3" selected></md-filter-chip>
+      <md-filter-chip label="4×4" data-size="4"></md-filter-chip>
+    </md-chip-set>
+    <div class="puzzle-grid-wrap">
+      <div id="puzzle-grid" class="puzzle-grid"></div>
+    </div>
+    <p class="md-body-medium md-on-surface-variant" id="puzzle-status" style="text-align:center;margin-top:12px">
+      <span id="puzzle-status-text"></span>
+      <span id="puzzle-badge" class="puzzle-badge is-hidden">完成❤️</span>
+    </p>
+  </div>
+  <div slot="actions" class="lightbox__controls">
+    <md-text-button id="puzzle-shuffle">重新打亂</md-text-button>
+    <md-text-button id="puzzle-back">返回照片</md-text-button>
+  </div>
+</md-dialog>
 {% endblock %}
 {% block extraScripts %}
 <script src="{{ '/js/gallery.js' | url }}"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin=""></script>
 <script src="{{ '/js/gallery-map.js' | url }}"></script>
+<script src="{{ '/js/puzzle.js' | url }}"></script>
 {% endblock %}
